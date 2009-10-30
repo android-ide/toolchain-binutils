@@ -1,0 +1,26 @@
+2009-05-06  Jing Yu  <jingyu@google.com>
+
+	Apply the binutils patch made in CL 28090-p2. This change adds a new
+	-save-temps option to as and makes gcc pass this option to as
+	if gcc is invoked with -save-temps. This option is ignored by as.
+
+	Changed files:
+
+	as/as.c
+
+2009-04-01  Doug Kwan  <dougkwan@google.com>
+
+        Force page size to be 4K and undefine EMBEDDED.  This change breaks
+        compatiblity with other arm-eabi platforms.  This is ported from
+	our 2.17 and is the only change required.  Other changes in 2.17
+	are already in 2.19 or unnecessary.
+
+	Changed files:
+
+	bfd/elf32-arm.c
+	ld/emulparams/armelf.sh
+
+2009-03-31  Doug Kwan  <dougkwan@google.com>
+
+	Import binutils-2.19 into android-toolchain
+	This is a stock FSF version.
