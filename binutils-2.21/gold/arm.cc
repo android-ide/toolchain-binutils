@@ -4480,6 +4480,8 @@ Reloc_stub::stub_type_for_reloc(
     }
 
   int64_t branch_offset;
+  bool output_is_position_independent =
+      parameters->options().output_is_position_independent();
   if (r_type == elfcpp::R_ARM_THM_CALL || r_type == elfcpp::R_ARM_THM_JUMP24)
     {
       // For THUMB BLX instruction, bit 1 of target comes from bit 1 of the
@@ -4508,7 +4510,7 @@ Reloc_stub::stub_type_for_reloc(
 	      // Thumb to thumb.
 	      if (!thumb_only)
 		{
-		  stub_type = (parameters->options().shared()
+		  stub_type = (output_is_position_independent
 			       || should_force_pic_veneer)
 		    // PIC stubs.
 		    ? ((may_use_blx
@@ -4529,7 +4531,7 @@ Reloc_stub::stub_type_for_reloc(
 		}
 	      else
 		{
-		  stub_type = (parameters->options().shared()
+		  stub_type = (output_is_position_independent
 			       || should_force_pic_veneer)
 		    ? arm_stub_long_branch_thumb_only_pic	// PIC stub.
 		    : arm_stub_long_branch_thumb_only;	// non-PIC stub.
@@ -4542,7 +4544,7 @@ Reloc_stub::stub_type_for_reloc(
 	      // FIXME: We should check that the input section is from an
 	      // object that has interwork enabled.
 
-	      stub_type = (parameters->options().shared()
+	      stub_type = (output_is_position_independent
 			   || should_force_pic_veneer)
 		// PIC stubs.
 		? ((may_use_blx
@@ -4584,7 +4586,7 @@ Reloc_stub::stub_type_for_reloc(
 	      || (r_type == elfcpp::R_ARM_JUMP24)
 	      || (r_type == elfcpp::R_ARM_PLT32))
 	    {
-	      stub_type = (parameters->options().shared()
+	      stub_type = (output_is_position_independent
 			   || should_force_pic_veneer)
 		// PIC stubs.
 		? (may_use_blx
@@ -4603,7 +4605,7 @@ Reloc_stub::stub_type_for_reloc(
 	  if (branch_offset > ARM_MAX_FWD_BRANCH_OFFSET
 	      || (branch_offset < ARM_MAX_BWD_BRANCH_OFFSET))
 	    {
-	      stub_type = (parameters->options().shared()
+	      stub_type = (output_is_position_independent
 			   || should_force_pic_veneer)
 		? arm_stub_long_branch_any_arm_pic	// PIC stubs.
 		: arm_stub_long_branch_any_any;		/// non-PIC.

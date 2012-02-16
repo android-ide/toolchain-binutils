@@ -917,3 +917,36 @@ gold/script-sections.cc
   Owner: dougkwan
   Backport upstream patch to fix linker crash.
   http://www.cygwin.com/ml/binutils-cvs/2011-10/msg00095.html
+
+gold/yyscript.y
+  Status: Backport
+  Owner: saugustine
+  Backport upstream patch to fix INCLUDE syntax errors.
+  http://sourceware.org/ml/binutils/2011-11/msg00089.html
+
+gold/dirsearch.cc
+gold/dirsearch.h
+gold/script.cc.cc
+  Status: Backport
+  Owner: saugustine
+  Backport upstream patch to implement INCLUDE directive
+  http://sourceware.org/ml/binutils/2011-11/msg00165.html
+
+gas/config/tc-arm.c
+gas/testsuite/gas/arm/attr-march-armv7.d
+include/opcode/arm.h
+  Status: Upstream
+  Owner: dougkwan
+  Fix b/5803351 by merging relevant parts of:
+  http://www.cygwin.com/ml/binutils-cvs/2011-04/msg00112.html
+
+gold/arm.cc
+  Status: Upstream
+  Owner: dougkwan
+  Fix PIE crashes on ARM.
+  http://sourceware.org/ml/binutils-cvs/2012-02/msg00012.html
+
+gas/as.c
+  Status: Local for mobile release branch
+  Owner: jingyu
+  Allow .incbin by default.

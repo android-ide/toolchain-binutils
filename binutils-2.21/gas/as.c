@@ -99,7 +99,7 @@ int debug_memory = 0;
 int verbose = 0;
 
 /* Enable incbin directive. */
-int allow_incbin_directive = 0;
+int allow_incbin_directive = 1;
 
 /* Keep the output file.  */
 int keep_it = 0;
