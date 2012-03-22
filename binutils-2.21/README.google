@@ -950,3 +950,40 @@ gas/as.c
   Status: Local for mobile release branch
   Owner: jingyu
   Allow .incbin by default.
+
+gold/arm.cc
+  Status: Backport
+  Owner: dougkwan
+  Backport fix from upstream for ARM regression.
+  http://sourceware.org/ml/binutils-cvs/2012-03/msg00059.html
+
+gold/arm.cc
+gold/gold.cc
+gold/target.h
+gold/testsuite/Makefile.am
+gold/testsuite/Makefile.in
+gold/testsuite/arm_exidx_test.s
+gold/testsuite/arm_exidx_test.sh
+  Status: Backport
+  Owner: dougkwan
+  Backport fix from upstream for __exidx_start & __exidx_end section
+  symbols on ARM.
+  http://sourceware.org/ml/binutils-cvs/2012-03/msg00086.html
+
+gold/arm.cc
+gold/layout.cc
+  Status: Backport
+  Owner: dougkwan
+  Backport fix from upstream for -z relro.
+  http://sourceware.org/ml/binutils-cvs/2012-03/msg00064.html
+  http://sourceware.org/ml/binutils-cvs/2012-03/msg00067.html
+
+gold/incremental.cc
+gold/incremental.h
+gold/layout.cc
+gold/object.cc
+gold/testsuite/Makefile.am
+gold/testsuite/Makefile.in
+  Status: Backport
+  Owner: dougkwan
+  g4 integrate 55621-p2 to fix gold regression on x86.

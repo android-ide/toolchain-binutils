@@ -1822,15 +1822,26 @@ memory_test.stdout: memory_test
 
 if DEFAULT_TARGET_X86_64
 
+two_file_test_1_v1_ndebug.o: two_file_test_1_v1.cc
+	$(CXXCOMPILE) -O0 -g0 -c -o $@ $<
+two_file_test_1_ndebug.o: two_file_test_1.cc
+	$(CXXCOMPILE) -O0 -g0 -c -o $@ $<
+two_file_test_1b_ndebug.o: two_file_test_1b.cc
+	$(CXXCOMPILE) -O0 -g0 -c -o $@ $<
+two_file_test_2_ndebug.o: two_file_test_2.cc
+	$(CXXCOMPILE) -O0 -g0 -c -o $@ $<
+two_file_test_main_ndebug.o: two_file_test_main.cc
+	$(CXXCOMPILE) -O0 -g0 -c -o $@ $<
+
 check_PROGRAMS += incremental_test_2
 MOSTLYCLEANFILES += two_file_test_tmp_2.o
-incremental_test_2: two_file_test_1_v1.o two_file_test_1.o two_file_test_1b.o \
-		    two_file_test_2.o two_file_test_main.o gcctestdir/ld
-	cp -f two_file_test_1_v1.o two_file_test_tmp_2.o
-	$(CXXLINK) -Wl,--incremental-full,--incremental-patch=100 -Bgcctestdir/ two_file_test_tmp_2.o two_file_test_1b.o two_file_test_2.o two_file_test_main.o
+incremental_test_2: two_file_test_1_v1_ndebug.o two_file_test_1_ndebug.o two_file_test_1b_ndebug.o \
+		    two_file_test_2_ndebug.o two_file_test_main_ndebug.o gcctestdir/ld
+	cp -f two_file_test_1_v1_ndebug.o two_file_test_tmp_2.o
+	$(CXXLINK) -Wl,--incremental-full,--incremental-patch=100 -Bgcctestdir/ two_file_test_tmp_2.o two_file_test_1b_ndebug.o two_file_test_2_ndebug.o two_file_test_main_ndebug.o
 	@sleep 1
-	cp -f two_file_test_1.o two_file_test_tmp_2.o
-	$(CXXLINK) -Wl,--incremental-update -Bgcctestdir/ two_file_test_tmp_2.o two_file_test_1b.o two_file_test_2.o two_file_test_main.o
+	cp -f two_file_test_1_ndebug.o two_file_test_tmp_2.o
+	$(CXXLINK) -Wl,--incremental-update -Bgcctestdir/ two_file_test_tmp_2.o two_file_test_1b_ndebug.o two_file_test_2_ndebug.o two_file_test_main_ndebug.o
 
 check_PROGRAMS += incremental_test_3
 MOSTLYCLEANFILES += two_file_test_tmp_3.o
@@ -2270,7 +2281,7 @@ check_SCRIPTS += arm_exidx_test.sh
 check_DATA += arm_exidx_test.stdout
 
 arm_exidx_test.stdout: arm_exidx_test.so
-	$(TEST_READELF) -S $< > $@
+	$(TEST_READELF) -Sr $< > $@
 
 arm_exidx_test.so: arm_exidx_test.o ../ld-new
 	../ld-new -shared -o $@ $<

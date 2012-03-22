@@ -857,11 +857,10 @@ Layout::init_fixed_output_section(const char* name,
 {
   unsigned int sh_type = shdr.get_sh_type();
 
-  // We preserve the layout of PROGBITS, NOBITS, and NOTE sections.
+  // We preserve the layout of PROGBITS, NOBITS, INIT_ARRAY, FINI_ARRAY,
+  // PRE_INIT_ARRAY, and NOTE sections.
   // All others will be created from scratch and reallocated.
-  if (sh_type != elfcpp::SHT_PROGBITS
-      && sh_type != elfcpp::SHT_NOBITS
-      && sh_type != elfcpp::SHT_NOTE)
+  if (!can_incremental_update(sh_type))
     return NULL;
 
   typename elfcpp::Elf_types<size>::Elf_Addr sh_addr = shdr.get_sh_addr();
@@ -1262,24 +1261,26 @@ Layout::make_output_section(const char* name, elfcpp::Elf_Word type,
   bool is_relro_local = false;
   if (!this->script_options_->saw_sections_clause()
       && parameters->options().relro()
-      && type == elfcpp::SHT_PROGBITS
       && (flags & elfcpp::SHF_ALLOC) != 0
       && (flags & elfcpp::SHF_WRITE) != 0)
     {
-      if (strcmp(name, ".data.rel.ro") == 0)
-	is_relro = true;
-      else if (strcmp(name, ".data.rel.ro.local") == 0)
+      if (type == elfcpp::SHT_PROGBITS)
 	{
-	  is_relro = true;
-	  is_relro_local = true;
+	  if (strcmp(name, ".data.rel.ro") == 0)
+	    is_relro = true;
+	  else if (strcmp(name, ".data.rel.ro.local") == 0)
+	    {
+	      is_relro = true;
+	      is_relro_local = true;
+	    }
+	  else if (strcmp(name, ".ctors") == 0
+		   || strcmp(name, ".dtors") == 0
+		   || strcmp(name, ".jcr") == 0)
+	    is_relro = true;
 	}
       else if (type == elfcpp::SHT_INIT_ARRAY
 	       || type == elfcpp::SHT_FINI_ARRAY
 	       || type == elfcpp::SHT_PREINIT_ARRAY)
-	is_relro = true;
-      else if (strcmp(name, ".ctors") == 0
-	       || strcmp(name, ".dtors") == 0
-	       || strcmp(name, ".jcr") == 0)
 	is_relro = true;
     }
 
@@ -1323,6 +1324,7 @@ Layout::make_output_section(const char* name, elfcpp::Elf_Word type,
       && order != ORDER_FINI
       && order != ORDER_RELRO_LAST
       && order != ORDER_NON_RELRO_FIRST
+      && strcmp(name, ".eh_frame") != 0
       && strcmp(name, ".ctors") != 0
       && strcmp(name, ".dtors") != 0
       && strcmp(name, ".jcr") != 0)
