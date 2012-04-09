@@ -987,3 +987,10 @@ gold/testsuite/Makefile.in
   Status: Backport
   Owner: dougkwan
   g4 integrate 55621-p2 to fix gold regression on x86.
+
+gold/icf.cc
+gold/icf.h
+  Status: In upstream.
+  Fix dangling pointer bug caused by calling c_str method of temporary
+  string object.
+  http://cygwin.com/ml/binutils/2011-02/msg00030.html 
