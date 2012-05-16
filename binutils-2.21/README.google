@@ -994,3 +994,31 @@ gold/icf.h
   Fix dangling pointer bug caused by calling c_str method of temporary
   string object.
   http://cygwin.com/ml/binutils/2011-02/msg00030.html 
+
+bfd/elf.c
+  Status: backport
+  Owner: bccheng
+  Preserve the original p_align and p_flags if they are valid.
+  g4 integrate 60390-p2
+
+
+bfd/elf32-arm.c
+bfd/elf32-i386.c
+bfd/elf64-x86-64.c
+bfd/elf64-ppc.c
+bfd/elflink.c
+ld/testsuite/ld-elf/pr13177.d
+ld/testsuite/ld-elf/pr13177.s
+  Status: Backport
+  Owner: jingyu
+  Fix --gc-sections bug in bfd ld.
+  http://sourceware.org/bugzilla/show_bug.cgi?id=13177
+  http://sourceware.org/ml/binutils/2012-02/msg00056.html
+  http://sourceware.org/ml/binutils/2011-06/msg00154.html
+  http://sourceware.org/ml/binutils/2011-12/msg00077.html
+
+bfd/elflink.c
+  Status: Backport
+  Owner: jingyu
+  Fix elf_link_output_extsym for warning, following up --gc-sections fix.
+  http://sourceware.org/bugzilla/show_bug.cgi?id=13311
