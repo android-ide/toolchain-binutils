@@ -13025,6 +13025,21 @@ const struct elf_size_info elf32_arm_size_info =
 #undef  elf_backend_obj_attrs_section_type
 #define elf_backend_obj_attrs_section_type	SHT_ARM_ATTRIBUTES
 
+#undef  elf_backend_plt_sym_val
+#define elf_backend_plt_sym_val		elf32_arm_plt_sym_val
+
+/* Return address for Ith PLT stub in section PLT, for relocation REL
+   or (bfd_vma) -1 if it should not be included.  */
+
+static bfd_vma
+elf32_arm_plt_sym_val (bfd_vma i, const asection *plt,
+			       const arelent *rel ATTRIBUTE_UNUSED)
+{
+  return plt->vma + 4 * (
+    ARRAY_SIZE(elf32_arm_plt0_entry) +
+    ARRAY_SIZE(elf32_arm_plt_entry) * i);
+}
+
 #include "elf32-target.h"
 
 /* VxWorks Targets.  */
