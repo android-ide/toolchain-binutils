@@ -4312,6 +4312,8 @@ class Output_file
   unsigned char* base_;
   // True iff base_ points to a memory buffer rather than an output file.
   bool map_is_anonymous_;
+  // True if base_ was allocated using new rather than mmap.
+  bool map_is_allocated_;
   // True if this is a temporary file which should not be output.
   bool is_temporary_;
 };
