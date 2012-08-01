@@ -222,9 +222,6 @@ Symbol_table::do_allocate_commons_list(
     Mapfile* mapfile,
     Sort_commons_order sort_order)
 {
-  typedef typename Sized_symbol<size>::Value_type Value_type;
-  typedef typename Sized_symbol<size>::Size_type Size_type;
-
   // We've kept a list of all the common symbols.  But the symbol may
   // have been resolved to a defined symbol by now.  And it may be a
   // forwarder.  First remove all non-common symbols.
