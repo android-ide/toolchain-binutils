@@ -1928,7 +1928,7 @@ Output_symtab_xindex::endian_do_write(unsigned char* const oview)
        ++p)
     {
       unsigned int symndx = p->first;
-      gold_assert(symndx * 4 < this->data_size());
+      gold_assert(static_cast<off_t>(symndx * 4) < this->data_size());
       elfcpp::Swap<32, big_endian>::writeval(oview + symndx * 4, p->second);
     }
 }
