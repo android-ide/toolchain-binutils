@@ -674,6 +674,9 @@ queue_middle_tasks(const General_options& options,
   // Define symbols from any linker scripts.
   layout->define_script_symbols(symtab);
 
+  // TODO(csilvers): figure out a more principled way to get the target
+  Target* target = const_cast<Target*>(&parameters->target());
+
   // Attach sections to segments.
   layout->attach_sections_to_segments();
 
@@ -685,6 +688,9 @@ queue_middle_tasks(const General_options& options,
       // Define __start and __stop symbols for output sections where
       // appropriate.
       layout->define_section_symbols(symtab);
+
+      // Define target-specific symbols.
+      target->define_standard_symbols(symtab, layout);
     }
 
   // Make sure we have symbols for any required group signatures.
@@ -766,8 +772,6 @@ queue_middle_tasks(const General_options& options,
 
   // When all those tasks are complete, we can start laying out the
   // output file.
-  // TODO(csilvers): figure out a more principled way to get the target
-  Target* target = const_cast<Target*>(&parameters->target());
   workqueue->queue(new Task_function(new Layout_task_runner(options,
 							    input_objects,
 							    symtab,
