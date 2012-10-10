@@ -10950,8 +10950,6 @@ Target_arm<big_endian>::scan_reloc_for_stub(
     elfcpp::Elf_types<32>::Elf_Swxword addend,
     Arm_address address)
 {
-  typedef typename Target_arm<big_endian>::Relocate Relocate;
-
   const Arm_relobj<big_endian>* arm_relobj =
     Arm_relobj<big_endian>::as_arm_relobj(relinfo->object);
 
