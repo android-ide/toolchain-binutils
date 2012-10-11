@@ -631,7 +631,6 @@ Eh_frame::do_add_ehframe_input_section(
     section_size_type contents_len,
     New_cies* new_cies)
 {
-  typedef typename elfcpp::Elf_types<size>::Elf_Addr Address;
   Track_relocs<size, big_endian> relocs;
 
   const unsigned char* p = pcontents;
