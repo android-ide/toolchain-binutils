@@ -1726,6 +1726,11 @@ mips_elf_check_symbols (struct mips_elf_link_hash_entry *h, void *data)
 
   if (mips_elf_local_pic_function_p (h))
     {
+      /* PR 12845: If H is in a section that has been garbage
+	 collected it will have its output section set to *ABS*.  */
+      if (bfd_is_abs_section (h->root.root.u.def.section->output_section))
+	return TRUE;
+
       /* H is a function that might need $25 to be valid on entry.
 	 If we're creating a non-PIC relocatable object, mark H as
 	 being PIC.  If we're creating a non-relocatable object with
@@ -3852,6 +3857,10 @@ mips_elf_count_got_symbols (struct mips_elf_link_hash_entry *h, void *data)
   struct mips_elf_link_hash_table *htab;
   struct mips_got_info *g;
 
+  /* Follow warning symbol link.  */
+  if (h->root.root.type == bfd_link_hash_warning)
+    h = (struct mips_elf_link_hash_entry *) h->root.root.u.i.link;
+
   info = (struct bfd_link_info *) data;
   htab = mips_elf_hash_table (info);
   g = htab->got_info;
@@ -4080,14 +4089,18 @@ mips_elf_merge_got_with (struct mips_elf_bfd2got_hash *bfd2got,
   if (estimate >= from->page_gotno + to->page_gotno)
     estimate = from->page_gotno + to->page_gotno;
 
-  /* And conservatively estimate how many local, global and TLS entries
+  /* And conservatively estimate how many local and TLS entries
      would be needed.  */
-  estimate += (from->local_gotno
-	       + from->global_gotno
-	       + from->tls_gotno
-	       + to->local_gotno
-	       + to->global_gotno
-	       + to->tls_gotno);
+  estimate += from->local_gotno + to->local_gotno;
+  estimate += from->tls_gotno + to->tls_gotno;
+
+  /* If we're merging with the primary got, we will always have
+     the full set of global entries.  Otherwise estimate those
+     conservatively as well.  */
+  if (to == arg->primary)
+    estimate += arg->global_count;
+  else
+    estimate += from->global_gotno + to->global_gotno;
 
   /* Bail out if the combined GOT might be too big.  */
   if (estimate > arg->max_count)
@@ -7736,7 +7749,6 @@ _bfd_mips_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	      if (!mips_elf_record_got_page_entry (info, abfd, r_symndx,
 						   addend))
 		return FALSE;
-	      break;
 	    }
 	  /* Fall through.  */
 
@@ -8600,6 +8612,10 @@ static bfd_boolean
 mips_elf_allocate_lazy_stub (struct mips_elf_link_hash_entry *h, void **data)
 {
   struct mips_elf_link_hash_table *htab;
+
+  /* Follow warning symbol link.  */
+  if (h->root.root.type == bfd_link_hash_warning)
+    h = (struct mips_elf_link_hash_entry *) h->root.root.u.i.link;
 
   htab = (struct mips_elf_link_hash_table *) data;
   if (h->needs_lazy_stub)
