@@ -8796,6 +8796,9 @@ static const char *arm_attr_tag_ABI_optimization_goals[] =
 static const char *arm_attr_tag_ABI_FP_optimization_goals[] =
   {"None", "Prefer Speed", "Aggressive Speed", "Prefer Size",
     "Aggressive Size", "Prefer Accuracy", "Aggressive Accuracy"};
+static const char * arm_attr_tag_DIV_use[] =
+  {"Allowed in Thumb-ISA, v7-R or v7-M", "Not allowed",
+    "Allowed in v7-A with integer division extension"};
 
 #define LOOKUP(id, name) \
   {id, #name, 0x80 | ARRAY_SIZE(arm_attr_tag_##name), arm_attr_tag_##name}
@@ -8829,7 +8832,8 @@ static arm_attr_public_tag arm_attr_public_tags[] =
   LOOKUP(29, ABI_WMMX_args),
   LOOKUP(30, ABI_optimization_goals),
   LOOKUP(31, ABI_FP_optimization_goals),
-  {32, "compatibility", 0, NULL}
+  {32, "compatibility", 0, NULL},
+  LOOKUP(44, DIV_use)
 };
 #undef LOOKUP
 

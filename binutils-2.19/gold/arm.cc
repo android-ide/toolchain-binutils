@@ -10342,6 +10342,19 @@ Target_arm<big_endian>::merge_object_attributes(
 	    out_attr[i].set_int_value(in_attr[i].int_value());
 	  break;
 
+	case elfcpp::Tag_DIV_use:
+	  // In later binutils this tag is set to zero if we can use UDIV and SDIV in Thumb
+	  // mode on a v7-M or v7-R CPU; to one if we can not use UDIV or
+	  // SDIV at all; and to two if we can use UDIV or SDIV on a v7-A
+	  // CPU.  We will merge as follows: If the input attribute's value
+	  // is one then the output attribute's value remains unchanged.  If
+	  // the input attribute's value is zero or two then if the output
+	  // attribute's value is one the output value is set to the input
+	  // value, otherwise the output value must be the same as the
+	  // inputs.
+	  // In this binutils we don't generate in assembler nor propagate this tag.
+	  break;
+
 	case elfcpp::Tag_nodefaults:
 	  // This tag is set if it exists, but the value is unused (and is
 	  // typically zero).  We don't actually need to do anything here -

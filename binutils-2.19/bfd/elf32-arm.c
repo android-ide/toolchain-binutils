@@ -9340,6 +9340,19 @@ elf32_arm_merge_eabi_attributes (bfd *ibfd, bfd *obfd)
 	      return FALSE;
 	    }
 	  break;
+	case Tag_DIV_use:
+	  /* In later binutils this tag is set to zero if we can use UDIV and SDIV in Thumb
+	     mode on a v7-M or v7-R CPU; to one if we can not use UDIV or
+	     SDIV at all; and to two if we can use UDIV or SDIV on a v7-A
+	     CPU.  We will merge as follows: If the input attribute's value
+	     is one then the output attribute's value remains unchanged.  If
+	     the input attribute's value is zero or two then if the output
+	     attribute's value is one the output value is set to the input
+	     value, otherwise the output value must be the same as the
+	     inputs.
+	     In this binutils we don't generate in assembler nor propagate this tag */
+
+	  break;
 	default: /* All known attributes should be explicitly covered.   */
 	  abort ();
 	}
@@ -9372,7 +9385,7 @@ elf32_arm_merge_eabi_attributes (bfd *ibfd, bfd *obfd)
 
   for (; in_list; in_list = in_list->next)
     {
-      if ((in_list->tag & 128) < 64)
+      if ((in_list->tag & 128) < 64 && in_list->tag != Tag_DIV_use)
 	{
 	  _bfd_error_handler
 	    (_("Warning: %B: Unknown EABI object attribute %d"),
