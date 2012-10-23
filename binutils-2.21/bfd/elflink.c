@@ -11575,6 +11575,9 @@ struct elf_gc_sweep_symbol_info
 static bfd_boolean
 elf_gc_sweep_symbol (struct elf_link_hash_entry *h, void *data)
 {
+  if (h->root.type == bfd_link_hash_warning)
+    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+
   if (!h->mark
       && (((h->root.type == bfd_link_hash_defined
             || h->root.type == bfd_link_hash_defweak)
