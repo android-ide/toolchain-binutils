@@ -10197,7 +10197,9 @@ elf32_arm_merge_eabi_attributes (bfd *ibfd, bfd *obfd)
 		 nothing.  */
 	      else if (in_attr[i].i == 0)
 		{
-		  BFD_ASSERT (in_attr[Tag_ABI_HardFP_use].i == 0);
+	         /* When linking against earlier version of object file, Tag_FP_arch may not
+	            even exist, while Tag_ABI_HardFP_use is non-zero. */
+		  BFD_ASSERT (!ATTR_TYPE_EXIST(in_attr[i].type) || in_attr[Tag_ABI_HardFP_use].i == 0);
 		  break;
 		}
 

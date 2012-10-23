@@ -297,7 +297,7 @@ bfd_elf_add_obj_attr_int (bfd *abfd, int vendor, int tag, unsigned int i)
   obj_attribute *attr;
 
   attr = elf_new_obj_attr (abfd, vendor, tag);
-  attr->type = _bfd_elf_obj_attrs_arg_type (abfd, vendor, tag);
+  attr->type = _bfd_elf_obj_attrs_arg_type (abfd, vendor, tag) | ATTR_TYPE_FLAG_EXIST;
   attr->i = i;
 }
 
@@ -320,7 +320,7 @@ bfd_elf_add_obj_attr_string (bfd *abfd, int vendor, int tag, const char *s)
   obj_attribute *attr;
 
   attr = elf_new_obj_attr (abfd, vendor, tag);
-  attr->type = _bfd_elf_obj_attrs_arg_type (abfd, vendor, tag);
+  attr->type = _bfd_elf_obj_attrs_arg_type (abfd, vendor, tag) | ATTR_TYPE_FLAG_EXIST;
   attr->s = _bfd_elf_attr_strdup (abfd, s);
 }
 
@@ -332,7 +332,7 @@ bfd_elf_add_obj_attr_int_string (bfd *abfd, int vendor, int tag,
   obj_attribute *attr;
 
   attr = elf_new_obj_attr (abfd, vendor, tag);
-  attr->type = _bfd_elf_obj_attrs_arg_type (abfd, vendor, tag);
+  attr->type = _bfd_elf_obj_attrs_arg_type (abfd, vendor, tag) | ATTR_TYPE_FLAG_EXIST;
   attr->i = i;
   attr->s = _bfd_elf_attr_strdup (abfd, s);
 }
