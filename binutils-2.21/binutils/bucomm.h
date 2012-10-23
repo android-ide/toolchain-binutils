@@ -23,6 +23,8 @@
 #ifndef _BUCOMM_H
 #define _BUCOMM_H
 
+#include <sys/stat.h>
+
 /* Return the filename in a static buffer.  */
 const char *bfd_get_archive_filename (const bfd *);
 
