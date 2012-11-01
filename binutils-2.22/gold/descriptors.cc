@@ -50,8 +50,6 @@ set_close_on_exec(int fd)
 // Mingw does not define F_SETFD.
 #ifdef F_SETFD
   fcntl(fd, F_SETFD, FD_CLOEXEC);
-#else
-  (void)fd;
 #endif
 }
 

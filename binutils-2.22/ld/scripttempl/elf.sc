@@ -1,6 +1,6 @@
 #
 # Unusual variables checked by this code:
-#	NOP - four byte opcode for no-op (defaults to 0)
+#	NOP - four byte opcode for no-op (defaults to none)
 #	NO_SMALL_DATA - no .sbss/.sbss2/.sdata/.sdata2 sections if not
 #		empty.
 #	SMALL_DATA_CTOR - .ctors contains small data.
@@ -40,7 +40,7 @@
 #	NO_RELA_RELOCS - Don't include .rela.* sections in script
 #	NON_ALLOC_DYN - Place dynamic sections after data segment.
 #	TEXT_DYNAMIC - .dynamic in text segment, not data segment.
-#	EMBEDDED - whether this is for an embedded system. 
+#	EMBEDDED - whether this is for an embedded system.
 #	SHLIB_TEXT_START_ADDR - if set, add to SIZEOF_HEADERS to set
 #		start address of shared library.
 #	INPUT_FILES - INPUT command of files to always include
@@ -53,6 +53,9 @@
 #	OTHER_SYMBOLS - symbols to place right at the end of the script.
 #	ETEXT_NAME - name of a symbol for the end of the text section,
 #		normally etext.
+#	SEPARATE_CODE - if set, .text and similar sections containing
+#		actual machine instructions must be in wholly disjoint
+#		pages from any other data, including headers
 #	SEPARATE_GOTPLT - if set, .got.plt should be separate output section,
 #		so that .got can be in the RELRO area.  It should be set to
 #		the number of bytes in the beginning of .got.plt which can be
@@ -91,6 +94,12 @@
 #
 #  Each of these can also have corresponding .rel.* and .rela.* sections.
 
+if test -n "$NOP"; then
+  FILL="=$NOP"
+else
+  FILL=
+fi
+
 test -z "$RODATA_NAME" && RODATA_NAME=rodata
 test -z "$SDATA_NAME" && SDATA_NAME=sdata
 test -z "$SBSS_NAME" && SBSS_NAME=sbss
@@ -111,9 +120,7 @@ DATA_SEGMENT_ALIGN="ALIGN(${SEGMENT_SIZE}) + (. & (${MAXPAGESIZE} - 1))"
 DATA_SEGMENT_RELRO_END=""
 DATA_SEGMENT_END=""
 if test -n "${COMMONPAGESIZE}"; then
-  #DATA_SEGMENT_ALIGN="ALIGN (${SEGMENT_SIZE}) - ((${MAXPAGESIZE} - .) & (${MAXPAGESIZE} - 1)); . = DATA_SEGMENT_ALIGN (${MAXPAGESIZE}, ${COMMONPAGESIZE})"
-  # For Android, we align at exactly a page boundary.
-  DATA_SEGMENT_ALIGN="ALIGN (${SEGMENT_SIZE}); . = DATA_SEGMENT_ALIGN (${MAXPAGESIZE}, ${COMMONPAGESIZE})"
+  DATA_SEGMENT_ALIGN="ALIGN (${SEGMENT_SIZE}) - ((${MAXPAGESIZE} - .) & (${MAXPAGESIZE} - 1)); . = DATA_SEGMENT_ALIGN (${MAXPAGESIZE}, ${COMMONPAGESIZE})"
   DATA_SEGMENT_END=". = DATA_SEGMENT_END (.);"
   DATA_SEGMENT_RELRO_END=". = DATA_SEGMENT_RELRO_END (${SEPARATE_GOTPLT-0}, .);"
 fi
@@ -150,8 +157,8 @@ RELA_IPLT=".rela.iplt    ${RELOCATING-0} :
     }"
 DYNAMIC=".dynamic      ${RELOCATING-0} : { *(.dynamic) }"
 RODATA=".${RODATA_NAME}       ${RELOCATING-0} : { *(.${RODATA_NAME}${RELOCATING+ .${RODATA_NAME}.* .gnu.linkonce.r.*}) }"
-DATARELRO=".data.rel.ro : { *(.data.rel.ro.local* .gnu.linkonce.d.rel.ro.local.*) *(.data.rel.ro* .gnu.linkonce.d.rel.ro.*) }"
-DISCARDED="/DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.gnu.lto_*) *(.mdebug.*) }"
+DATARELRO=".data.rel.ro : { *(.data.rel.ro.local* .gnu.linkonce.d.rel.ro.local.*) *(.data.rel.ro .data.rel.ro.* .gnu.linkonce.d.rel.ro.*) }"
+DISCARDED="/DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.gnu.lto_*) }"
 if test -z "${NO_SMALL_DATA}"; then
   SBSS=".${SBSS_NAME}         ${RELOCATING-0} :
   {
@@ -166,7 +173,7 @@ if test -z "${NO_SMALL_DATA}"; then
   SDATA="/* We want the small data sections together, so single-instruction offsets
      can access them all, and initialized data all before uninitialized, so
      we can shorten the on-disk segment size.  */
-  .${SDATA_NAME}        ${RELOCATING-0} : 
+  .${SDATA_NAME}        ${RELOCATING-0} :
   {
     ${RELOCATING+${SDATA_START_SYMBOLS}}
     ${CREATE_SHLIB+*(.${SDATA_NAME}2 .${SDATA_NAME}2.* .gnu.linkonce.s2.*)}
@@ -237,19 +244,21 @@ else
 fi
 INIT_ARRAY=".init_array   ${RELOCATING-0} :
   {
-    KEEP (*crtbegin*.o(.init_array))
+    ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__init_array_start = .);}}
     ${SORT_INIT_ARRAY}
     KEEP (*(.init_array))
     ${CTORS_IN_INIT_ARRAY}
+    ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__init_array_end = .);}}
   }"
 FINI_ARRAY=".fini_array   ${RELOCATING-0} :
   {
-    KEEP (*crtbegin*.o(.fini_array))
+    ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__fini_array_start = .);}}
     ${SORT_FINI_ARRAY}
     KEEP (*(.fini_array))
     ${DTORS_IN_FINI_ARRAY}
+    ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__fini_array_end = .);}}
   }"
-CTOR=".ctors        ${CONSTRUCTING-0} : 
+CTOR=".ctors        ${CONSTRUCTING-0} :
   {
     ${CONSTRUCTING+${CTOR_START}}
     /* gcc uses crtbegin.o to find the start of
@@ -263,14 +272,14 @@ CTOR=".ctors        ${CONSTRUCTING-0} :
        is in.  */
 
     KEEP (*crtbegin.o(.ctors))
-    KEEP (*crtbegin*.o(.ctors))
+    KEEP (*crtbegin?.o(.ctors))
 
     /* We don't want to include the .ctor section from
        the crtend.o file until after the sorted ctors.
        The .ctor section from the crtend file contains the
        end of ctors marker and it must be last */
 
-    KEEP (*(EXCLUDE_FILE (*crtend.o *crtend*.o $OTHER_EXCLUDE_FILES) .ctors))
+    KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o $OTHER_EXCLUDE_FILES) .ctors))
     KEEP (*(SORT(.ctors.*)))
     KEEP (*(.ctors))
     ${CONSTRUCTING+${CTOR_END}}
@@ -279,8 +288,8 @@ DTOR=".dtors        ${CONSTRUCTING-0} :
   {
     ${CONSTRUCTING+${DTOR_START}}
     KEEP (*crtbegin.o(.dtors))
-    KEEP (*crtbegin*.o(.dtors))
-    KEEP (*(EXCLUDE_FILE (*crtend.o *crtend*.o $OTHER_EXCLUDE_FILES) .dtors))
+    KEEP (*crtbegin?.o(.dtors))
+    KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o $OTHER_EXCLUDE_FILES) .dtors))
     KEEP (*(SORT(.dtors.*)))
     KEEP (*(.dtors))
     ${CONSTRUCTING+${DTOR_END}}
@@ -291,15 +300,18 @@ STACK="  .stack        ${RELOCATING-0}${RELOCATING+${STACK_ADDR}} :
     *(.stack)
   }"
 
-# For Android, remove SEGMENT_START.
-#TEXT_START_ADDR="SEGMENT_START(\"text-segment\", ${TEXT_START_ADDR})"
-#SHLIB_TEXT_START_ADDR="SEGMENT_START(\"text-segment\", ${SHLIB_TEXT_START_ADDR:-0})"
-TEXT_START_ADDR="${TEXT_START_ADDR}"
-SHLIB_TEXT_START_ADDR="0"
+TEXT_START_ADDR="SEGMENT_START(\"text-segment\", ${TEXT_START_ADDR})"
+SHLIB_TEXT_START_ADDR="SEGMENT_START(\"text-segment\", ${SHLIB_TEXT_START_ADDR:-0})"
+
+if [ -z "$SEPARATE_CODE" ]; then
+  SIZEOF_HEADERS_CODE=" + SIZEOF_HEADERS"
+else
+  SIZEOF_HEADERS_CODE=
+fi
 
 # if this is for an embedded system, don't add SIZEOF_HEADERS.
 if [ -z "$EMBEDDED" ]; then
-   test -z "${TEXT_BASE_ADDRESS}" && TEXT_BASE_ADDRESS="${TEXT_START_ADDR} + SIZEOF_HEADERS"
+   test -z "${TEXT_BASE_ADDRESS}" && TEXT_BASE_ADDRESS="${TEXT_START_ADDR}${SIZEOF_HEADERS_CODE}"
 else
    test -z "${TEXT_BASE_ADDRESS}" && TEXT_BASE_ADDRESS="${TEXT_START_ADDR}"
 fi
@@ -322,11 +334,19 @@ SECTIONS
 {
   /* Read-only sections, merged into text segment: */
   ${CREATE_SHLIB-${CREATE_PIE-${RELOCATING+PROVIDE (__executable_start = ${TEXT_START_ADDR}); . = ${TEXT_BASE_ADDRESS};}}}
-  ${CREATE_SHLIB+${RELOCATING+. = ${SHLIB_TEXT_START_ADDR} + SIZEOF_HEADERS;}}
-  ${CREATE_PIE+${RELOCATING+PROVIDE (__executable_start = ${SHLIB_TEXT_START_ADDR}); . = ${SHLIB_TEXT_START_ADDR} + SIZEOF_HEADERS;}}
+  ${CREATE_SHLIB+${RELOCATING+. = ${SHLIB_TEXT_START_ADDR}${SIZEOF_HEADERS_CODE};}}
+  ${CREATE_PIE+${RELOCATING+. = ${SHLIB_TEXT_START_ADDR}${SIZEOF_HEADERS_CODE};}}
+EOF
+
+emit_early_ro()
+{
+  cat <<EOF
   ${INITIAL_READONLY_SECTIONS}
   .note.gnu.build-id : { *(.note.gnu.build-id) }
 EOF
+}
+
+test -n "${SEPARATE_CODE}" || emit_early_ro
 
 test -n "${RELOCATING+0}" || unset NON_ALLOC_DYN
 test -z "${NON_ALLOC_DYN}" || TEXT_DYNAMIC=
@@ -357,8 +377,8 @@ eval $COMBRELOCCAT <<EOF
   .rel.${RODATA_NAME}   ${RELOCATING-0} : { *(.rel.${RODATA_NAME}${RELOCATING+ .rel.${RODATA_NAME}.* .rel.gnu.linkonce.r.*}) }
   .rela.${RODATA_NAME}  ${RELOCATING-0} : { *(.rela.${RODATA_NAME}${RELOCATING+ .rela.${RODATA_NAME}.* .rela.gnu.linkonce.r.*}) }
   ${OTHER_READONLY_RELOC_SECTIONS}
-  .rel.data.rel.ro ${RELOCATING-0} : { *(.rel.data.rel.ro${RELOCATING+* .rel.gnu.linkonce.d.rel.ro.*}) }
-  .rela.data.rel.ro ${RELOCATING-0} : { *(.rela.data.rel.ro${RELOCATING+* .rela.gnu.linkonce.d.rel.ro.*}) }
+  .rel.data.rel.ro ${RELOCATING-0} : { *(.rel.data.rel.ro${RELOCATING+ .rel.data.rel.ro.* .rel.gnu.linkonce.d.rel.ro.*}) }
+  .rela.data.rel.ro ${RELOCATING-0} : { *(.rela.data.rel.ro${RELOCATING+ .rela.data.rel.ro.* .rela.gnu.linkonce.d.rel.ro.*}) }
   .rel.data     ${RELOCATING-0} : { *(.rel.data${RELOCATING+ .rel.data.* .rel.gnu.linkonce.d.*}) }
   .rela.data    ${RELOCATING-0} : { *(.rela.data${RELOCATING+ .rela.data.* .rela.gnu.linkonce.d.*}) }
   ${OTHER_READWRITE_RELOC_SECTIONS}
@@ -421,7 +441,8 @@ cat >> ldscripts/dyntmp.$$ <<EOF
   ${OTHER_PLT_RELOC_SECTIONS}
 EOF
 
-if test -z "${NON_ALLOC_DYN}"; then
+emit_dyn()
+{
   if test -z "${NO_REL_RELOCS}${NO_RELA_RELOCS}"; then
     cat ldscripts/dyntmp.$$
   else
@@ -433,15 +454,17 @@ if test -z "${NON_ALLOC_DYN}"; then
     fi
   fi
   rm -f ldscripts/dyntmp.$$
-fi
+}
+
+test -n "${NON_ALLOC_DYN}${SEPARATE_CODE}" || emit_dyn
 
 cat <<EOF
-  .init         ${RELOCATING-0} : 
-  { 
+  .init         ${RELOCATING-0} :
+  {
     ${RELOCATING+${INIT_START}}
     KEEP (*(.init))
     ${RELOCATING+${INIT_END}}
-  } =${NOP-0}
+  } ${FILL}
 
   ${TEXT_PLT+${PLT}}
   ${TINY_READONLY_SECTION}
@@ -456,16 +479,31 @@ cat <<EOF
     /* .gnu.warning sections are handled specially by elf32.em.  */
     *(.gnu.warning)
     ${RELOCATING+${OTHER_TEXT_SECTIONS}}
-  } =${NOP-0}
+  } ${FILL}
   .fini         ${RELOCATING-0} :
   {
     ${RELOCATING+${FINI_START}}
     KEEP (*(.fini))
     ${RELOCATING+${FINI_END}}
-  } =${NOP-0}
+  } ${FILL}
   ${RELOCATING+PROVIDE (__${ETEXT_NAME} = .);}
   ${RELOCATING+PROVIDE (_${ETEXT_NAME} = .);}
   ${RELOCATING+PROVIDE (${ETEXT_NAME} = .);}
+EOF
+
+if test -n "${SEPARATE_CODE}"; then
+  cat <<EOF
+  /* Adjust the address for the rodata segment.  We want to adjust up to
+     the same address within the page on the next page up.  */
+  ${CREATE_SHLIB-${CREATE_PIE-${RELOCATING+. = ${RODATA_ADDR-ALIGN(${SEGMENT_SIZE}) + (. & (${MAXPAGESIZE} - 1))};}}}
+  ${CREATE_SHLIB+${RELOCATING+. = ${SHLIB_RODATA_ADDR-ALIGN(${SEGMENT_SIZE}) + (. & (${MAXPAGESIZE} - 1))};}}
+  ${CREATE_PIE+${RELOCATING+. = ${SHLIB_RODATA_ADDR-ALIGN(${SEGMENT_SIZE}) + (. & (${MAXPAGESIZE} - 1))};}}
+EOF
+  emit_early_ro
+  emit_dyn
+fi
+
+cat <<EOF
   ${WRITABLE_RODATA-${RODATA}}
   .${RODATA_NAME}1      ${RELOCATING-0} : { *(.${RODATA_NAME}1) }
   ${CREATE_SHLIB-${SDATA2}}
@@ -479,8 +517,8 @@ cat <<EOF
   .exception_ranges ${RELOCATING-0} : ONLY_IF_RO { *(.exception_ranges
   .exception_ranges*) }
 
-  /* Adjust the address for the data segment.  We want to align at exactly
-     a page boundary to make life easier for apriori. */
+  /* Adjust the address for the data segment.  We want to adjust up to
+     the same address within the page on the next page up.  */
   ${CREATE_SHLIB-${CREATE_PIE-${RELOCATING+. = ${DATA_ADDR-${DATA_SEGMENT_ALIGN}};}}}
   ${CREATE_SHLIB+${RELOCATING+. = ${SHLIB_DATA_ADDR-${DATA_SEGMENT_ALIGN}};}}
   ${CREATE_PIE+${RELOCATING+. = ${SHLIB_DATA_ADDR-${DATA_SEGMENT_ALIGN}};}}
@@ -494,23 +532,14 @@ cat <<EOF
   .tdata	${RELOCATING-0} : { *(.tdata${RELOCATING+ .tdata.* .gnu.linkonce.td.*}) }
   .tbss		${RELOCATING-0} : { *(.tbss${RELOCATING+ .tbss.* .gnu.linkonce.tb.*})${RELOCATING+ *(.tcommon)} }
 
-  /* Ensure the __preinit_array_start label is properly aligned.  We
-     could instead move the label definition inside the section, but
-     the linker would then create the section even if it turns out to
-     be empty, which isn't pretty.  */
-  . = ALIGN(32 / 8);
-  ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__preinit_array_start = .);}}
   .preinit_array   ${RELOCATING-0} :
   {
+    ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__preinit_array_start = .);}}
     KEEP (*(.preinit_array))
+    ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__preinit_array_end = .);}}
   }
-  ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__preinit_array_end = .);}}
-  ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__init_array_start = .);}}
   ${RELOCATING+${INIT_ARRAY}}
-  ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__init_array_end = .);}}
-  ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__fini_array_start = .);}}
   ${RELOCATING+${FINI_ARRAY}}
-  ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__fini_array_end = .);}}
   ${SMALL_DATA_CTOR-${RELOCATING+${CTOR}}}
   ${SMALL_DATA_DTOR-${RELOCATING+${DTOR}}}
   .jcr          ${RELOCATING-0} : { KEEP (*(.jcr)) }
@@ -539,12 +568,13 @@ cat <<EOF
   ${SMALL_DATA_CTOR+${RELOCATING+${CTOR}}}
   ${SMALL_DATA_DTOR+${RELOCATING+${DTOR}}}
   ${DATA_PLT+${PLT_BEFORE_GOT+${PLT}}}
-  ${SDATA_GOT+${RELOCATING+${OTHER_GOT_SYMBOLS}}}
+  ${SDATA_GOT+${RELOCATING+${OTHER_GOT_SYMBOLS+. = .; ${OTHER_GOT_SYMBOLS}}}}
   ${SDATA_GOT+${GOT}}
   ${SDATA_GOT+${OTHER_GOT_SECTIONS}}
   ${SDATA}
   ${OTHER_SDATA_SECTIONS}
   ${RELOCATING+${DATA_END_SYMBOLS-${USER_LABEL_PREFIX}_edata = .; PROVIDE (${USER_LABEL_PREFIX}edata = .);}}
+  ${RELOCATING+. = .;}
   ${RELOCATING+${USER_LABEL_PREFIX}__bss_start = .;}
   ${RELOCATING+${OTHER_BSS_SYMBOLS}}
   ${SBSS}
@@ -556,8 +586,10 @@ cat <<EOF
    *(COMMON)
    /* Align here to ensure that the .bss section occupies space up to
       _end.  Align after .bss to ensure correct alignment even if the
-      .bss section disappears because there are no input sections.  */
-   ${RELOCATING+. = ALIGN(${ALIGNMENT});}
+      .bss section disappears because there are no input sections.
+      FIXME: Why do we need it? When there is no .bss section, we don't
+      pad the .data section.  */
+   ${RELOCATING+. = ALIGN(. != 0 ? ${ALIGNMENT} : 1);}
   }
   ${OTHER_BSS_SECTIONS}
   ${RELOCATING+${OTHER_BSS_END_SYMBOLS}}
@@ -565,25 +597,11 @@ cat <<EOF
   ${LARGE_SECTIONS}
   ${RELOCATING+. = ALIGN(${ALIGNMENT});}
   ${RELOCATING+${OTHER_END_SYMBOLS}}
-  ${RELOCATING+${END_SYMBOLS-${USER_LABEL_PREFIX}_end = .;
-  _bss_end__ = . ; __bss_end__ = . ; __end__ = . ;
-  PROVIDE (${USER_LABEL_PREFIX}end = .);}}
+  ${RELOCATING+${END_SYMBOLS-${USER_LABEL_PREFIX}_end = .; PROVIDE (${USER_LABEL_PREFIX}end = .);}}
   ${RELOCATING+${DATA_SEGMENT_END}}
 EOF
 
-if test -n "${NON_ALLOC_DYN}"; then
-  if test -z "${NO_REL_RELOCS}${NO_RELA_RELOCS}"; then
-    cat ldscripts/dyntmp.$$
-  else
-    if test -z "${NO_REL_RELOCS}"; then
-      sed -e '/^[ 	]*\.rela\.[^}]*$/,/}/d' -e '/^[ 	]*\.rela\./d' ldscripts/dyntmp.$$
-    fi
-    if test -z "${NO_RELA_RELOCS}"; then
-      sed -e '/^[ 	]*\.rel\.[^}]*$/,/}/d' -e '/^[ 	]*\.rel\./d' ldscripts/dyntmp.$$
-    fi
-  fi
-  rm -f ldscripts/dyntmp.$$
-fi
+test -z "${NON_ALLOC_DYN}" || emit_dyn
 
 cat <<EOF
   /* Stabs debugging sections.  */
@@ -631,6 +649,9 @@ cat <<EOF
   .debug_pubtypes 0 : { *(.debug_pubtypes) }
   .debug_ranges   0 : { *(.debug_ranges) }
 
+  /* DWARF Extension.  */
+  .debug_macro    0 : { *(.debug_macro) } 
+  
   ${TINY_DATA_SECTION}
   ${TINY_BSS_SECTION}
 

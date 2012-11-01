@@ -78,91 +78,92 @@
      DATA_SEGMENT_END = 294,
      SORT_BY_NAME = 295,
      SORT_BY_ALIGNMENT = 296,
-     SORT_BY_INIT_PRIORITY = 297,
-     SIZEOF_HEADERS = 298,
-     OUTPUT_FORMAT = 299,
-     FORCE_COMMON_ALLOCATION = 300,
-     OUTPUT_ARCH = 301,
-     INHIBIT_COMMON_ALLOCATION = 302,
-     SEGMENT_START = 303,
-     INCLUDE = 304,
-     MEMORY = 305,
-     REGION_ALIAS = 306,
-     LD_FEATURE = 307,
-     NOLOAD = 308,
-     DSECT = 309,
-     COPY = 310,
-     INFO = 311,
-     OVERLAY = 312,
-     DEFINED = 313,
-     TARGET_K = 314,
-     SEARCH_DIR = 315,
-     MAP = 316,
-     ENTRY = 317,
-     NEXT = 318,
-     SIZEOF = 319,
-     ALIGNOF = 320,
-     ADDR = 321,
-     LOADADDR = 322,
-     MAX_K = 323,
-     MIN_K = 324,
-     STARTUP = 325,
-     HLL = 326,
-     SYSLIB = 327,
-     FLOAT = 328,
-     NOFLOAT = 329,
-     NOCROSSREFS = 330,
-     ORIGIN = 331,
-     FILL = 332,
-     LENGTH = 333,
-     CREATE_OBJECT_SYMBOLS = 334,
-     INPUT = 335,
-     GROUP = 336,
-     OUTPUT = 337,
-     CONSTRUCTORS = 338,
-     ALIGNMOD = 339,
-     AT = 340,
-     SUBALIGN = 341,
-     PROVIDE = 342,
-     PROVIDE_HIDDEN = 343,
-     AS_NEEDED = 344,
-     CHIP = 345,
-     LIST = 346,
-     SECT = 347,
-     ABSOLUTE = 348,
-     LOAD = 349,
-     NEWLINE = 350,
-     ENDWORD = 351,
-     ORDER = 352,
-     NAMEWORD = 353,
-     ASSERT_K = 354,
-     FORMAT = 355,
-     PUBLIC = 356,
-     DEFSYMEND = 357,
-     BASE = 358,
-     ALIAS = 359,
-     TRUNCATE = 360,
-     REL = 361,
-     INPUT_SCRIPT = 362,
-     INPUT_MRI_SCRIPT = 363,
-     INPUT_DEFSYM = 364,
-     CASE = 365,
-     EXTERN = 366,
-     START = 367,
-     VERS_TAG = 368,
-     VERS_IDENTIFIER = 369,
-     GLOBAL = 370,
-     LOCAL = 371,
-     VERSIONK = 372,
-     INPUT_VERSION_SCRIPT = 373,
-     KEEP = 374,
-     ONLY_IF_RO = 375,
-     ONLY_IF_RW = 376,
-     SPECIAL = 377,
-     INPUT_SECTION_FLAGS = 378,
-     EXCLUDE_FILE = 379,
-     CONSTANT = 380,
-     INPUT_DYNAMIC_LIST = 381
+     SORT_NONE = 297,
+     SORT_BY_INIT_PRIORITY = 298,
+     SIZEOF_HEADERS = 299,
+     OUTPUT_FORMAT = 300,
+     FORCE_COMMON_ALLOCATION = 301,
+     OUTPUT_ARCH = 302,
+     INHIBIT_COMMON_ALLOCATION = 303,
+     SEGMENT_START = 304,
+     INCLUDE = 305,
+     MEMORY = 306,
+     REGION_ALIAS = 307,
+     LD_FEATURE = 308,
+     NOLOAD = 309,
+     DSECT = 310,
+     COPY = 311,
+     INFO = 312,
+     OVERLAY = 313,
+     DEFINED = 314,
+     TARGET_K = 315,
+     SEARCH_DIR = 316,
+     MAP = 317,
+     ENTRY = 318,
+     NEXT = 319,
+     SIZEOF = 320,
+     ALIGNOF = 321,
+     ADDR = 322,
+     LOADADDR = 323,
+     MAX_K = 324,
+     MIN_K = 325,
+     STARTUP = 326,
+     HLL = 327,
+     SYSLIB = 328,
+     FLOAT = 329,
+     NOFLOAT = 330,
+     NOCROSSREFS = 331,
+     ORIGIN = 332,
+     FILL = 333,
+     LENGTH = 334,
+     CREATE_OBJECT_SYMBOLS = 335,
+     INPUT = 336,
+     GROUP = 337,
+     OUTPUT = 338,
+     CONSTRUCTORS = 339,
+     ALIGNMOD = 340,
+     AT = 341,
+     SUBALIGN = 342,
+     PROVIDE = 343,
+     PROVIDE_HIDDEN = 344,
+     AS_NEEDED = 345,
+     CHIP = 346,
+     LIST = 347,
+     SECT = 348,
+     ABSOLUTE = 349,
+     LOAD = 350,
+     NEWLINE = 351,
+     ENDWORD = 352,
+     ORDER = 353,
+     NAMEWORD = 354,
+     ASSERT_K = 355,
+     FORMAT = 356,
+     PUBLIC = 357,
+     DEFSYMEND = 358,
+     BASE = 359,
+     ALIAS = 360,
+     TRUNCATE = 361,
+     REL = 362,
+     INPUT_SCRIPT = 363,
+     INPUT_MRI_SCRIPT = 364,
+     INPUT_DEFSYM = 365,
+     CASE = 366,
+     EXTERN = 367,
+     START = 368,
+     VERS_TAG = 369,
+     VERS_IDENTIFIER = 370,
+     GLOBAL = 371,
+     LOCAL = 372,
+     VERSIONK = 373,
+     INPUT_VERSION_SCRIPT = 374,
+     KEEP = 375,
+     ONLY_IF_RO = 376,
+     ONLY_IF_RW = 377,
+     SPECIAL = 378,
+     INPUT_SECTION_FLAGS = 379,
+     EXCLUDE_FILE = 380,
+     CONSTANT = 381,
+     INPUT_DYNAMIC_LIST = 382
    };
 #endif
 /* Tokens.  */
@@ -205,91 +206,92 @@
 #define DATA_SEGMENT_END 294
 #define SORT_BY_NAME 295
 #define SORT_BY_ALIGNMENT 296
-#define SORT_BY_INIT_PRIORITY 297
-#define SIZEOF_HEADERS 298
-#define OUTPUT_FORMAT 299
-#define FORCE_COMMON_ALLOCATION 300
-#define OUTPUT_ARCH 301
-#define INHIBIT_COMMON_ALLOCATION 302
-#define SEGMENT_START 303
-#define INCLUDE 304
-#define MEMORY 305
-#define REGION_ALIAS 306
-#define LD_FEATURE 307
-#define NOLOAD 308
-#define DSECT 309
-#define COPY 310
-#define INFO 311
-#define OVERLAY 312
-#define DEFINED 313
-#define TARGET_K 314
-#define SEARCH_DIR 315
-#define MAP 316
-#define ENTRY 317
-#define NEXT 318
-#define SIZEOF 319
-#define ALIGNOF 320
-#define ADDR 321
-#define LOADADDR 322
-#define MAX_K 323
-#define MIN_K 324
-#define STARTUP 325
-#define HLL 326
-#define SYSLIB 327
-#define FLOAT 328
-#define NOFLOAT 329
-#define NOCROSSREFS 330
-#define ORIGIN 331
-#define FILL 332
-#define LENGTH 333
-#define CREATE_OBJECT_SYMBOLS 334
-#define INPUT 335
-#define GROUP 336
-#define OUTPUT 337
-#define CONSTRUCTORS 338
-#define ALIGNMOD 339
-#define AT 340
-#define SUBALIGN 341
-#define PROVIDE 342
-#define PROVIDE_HIDDEN 343
-#define AS_NEEDED 344
-#define CHIP 345
-#define LIST 346
-#define SECT 347
-#define ABSOLUTE 348
-#define LOAD 349
-#define NEWLINE 350
-#define ENDWORD 351
-#define ORDER 352
-#define NAMEWORD 353
-#define ASSERT_K 354
-#define FORMAT 355
-#define PUBLIC 356
-#define DEFSYMEND 357
-#define BASE 358
-#define ALIAS 359
-#define TRUNCATE 360
-#define REL 361
-#define INPUT_SCRIPT 362
-#define INPUT_MRI_SCRIPT 363
-#define INPUT_DEFSYM 364
-#define CASE 365
-#define EXTERN 366
-#define START 367
-#define VERS_TAG 368
-#define VERS_IDENTIFIER 369
-#define GLOBAL 370
-#define LOCAL 371
-#define VERSIONK 372
-#define INPUT_VERSION_SCRIPT 373
-#define KEEP 374
-#define ONLY_IF_RO 375
-#define ONLY_IF_RW 376
-#define SPECIAL 377
-#define INPUT_SECTION_FLAGS 378
-#define EXCLUDE_FILE 379
-#define CONSTANT 380
-#define INPUT_DYNAMIC_LIST 381
+#define SORT_NONE 297
+#define SORT_BY_INIT_PRIORITY 298
+#define SIZEOF_HEADERS 299
+#define OUTPUT_FORMAT 300
+#define FORCE_COMMON_ALLOCATION 301
+#define OUTPUT_ARCH 302
+#define INHIBIT_COMMON_ALLOCATION 303
+#define SEGMENT_START 304
+#define INCLUDE 305
+#define MEMORY 306
+#define REGION_ALIAS 307
+#define LD_FEATURE 308
+#define NOLOAD 309
+#define DSECT 310
+#define COPY 311
+#define INFO 312
+#define OVERLAY 313
+#define DEFINED 314
+#define TARGET_K 315
+#define SEARCH_DIR 316
+#define MAP 317
+#define ENTRY 318
+#define NEXT 319
+#define SIZEOF 320
+#define ALIGNOF 321
+#define ADDR 322
+#define LOADADDR 323
+#define MAX_K 324
+#define MIN_K 325
+#define STARTUP 326
+#define HLL 327
+#define SYSLIB 328
+#define FLOAT 329
+#define NOFLOAT 330
+#define NOCROSSREFS 331
+#define ORIGIN 332
+#define FILL 333
+#define LENGTH 334
+#define CREATE_OBJECT_SYMBOLS 335
+#define INPUT 336
+#define GROUP 337
+#define OUTPUT 338
+#define CONSTRUCTORS 339
+#define ALIGNMOD 340
+#define AT 341
+#define SUBALIGN 342
+#define PROVIDE 343
+#define PROVIDE_HIDDEN 344
+#define AS_NEEDED 345
+#define CHIP 346
+#define LIST 347
+#define SECT 348
+#define ABSOLUTE 349
+#define LOAD 350
+#define NEWLINE 351
+#define ENDWORD 352
+#define ORDER 353
+#define NAMEWORD 354
+#define ASSERT_K 355
+#define FORMAT 356
+#define PUBLIC 357
+#define DEFSYMEND 358
+#define BASE 359
+#define ALIAS 360
+#define TRUNCATE 361
+#define REL 362
+#define INPUT_SCRIPT 363
+#define INPUT_MRI_SCRIPT 364
+#define INPUT_DEFSYM 365
+#define CASE 366
+#define EXTERN 367
+#define START 368
+#define VERS_TAG 369
+#define VERS_IDENTIFIER 370
+#define GLOBAL 371
+#define LOCAL 372
+#define VERSIONK 373
+#define INPUT_VERSION_SCRIPT 374
+#define KEEP 375
+#define ONLY_IF_RO 376
+#define ONLY_IF_RW 377
+#define SPECIAL 378
+#define INPUT_SECTION_FLAGS 379
+#define EXCLUDE_FILE 380
+#define CONSTANT 381
+#define INPUT_DYNAMIC_LIST 382
 
 
 
@@ -328,7 +330,7 @@ typedef union YYSTYPE
   struct bfd_elf_version_tree *versnode;
 }
 /* Line 1529 of yacc.c.  */
-#line 332 "ldgram.h"
+#line 334 "ldgram.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
