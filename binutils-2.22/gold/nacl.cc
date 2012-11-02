@@ -25,6 +25,7 @@
 
 #include "nacl.h"
 #include "elfcpp.h"
+#include "libiberty.h"
 
 namespace gold
 {
