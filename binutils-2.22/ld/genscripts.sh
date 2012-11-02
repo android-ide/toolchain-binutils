@@ -241,7 +241,8 @@ if [ "x${use_sysroot}" != "xyes" ] ; then
   fi
 fi
 
-LIB_SEARCH_DIRS=`echo ${LIB_PATH} | sed -e 's/:/ /g' -e 's/\([^ ][^ ]*\)/SEARCH_DIR(\\"\1\\");/g'`
+# For Android, comment out LIB_SEARCH_DIRS.
+#LIB_SEARCH_DIRS=`echo ${LIB_PATH} | sed -e 's/:/ /g' -e 's/\([^ ][^ ]*\)/SEARCH_DIR(\\"\1\\");/g'`
 
 # We need it for testsuite.
 set $EMULATION_LIBPATH
@@ -307,6 +308,7 @@ LD_FLAG=
 DATA_ALIGNMENT=${DATA_ALIGNMENT_}
 RELOCATING=" "
 ( echo "/* Default linker script, for normal executables */"
+  echo "/* Modified for Android.  */"
   . ${CUSTOMIZER_SCRIPT}
   . ${srcdir}/scripttempl/${SCRIPT_NAME}.sc
 ) | sed -e '/^ *$/d;s/[ 	]*$//' > ldscripts/${EMULATION_NAME}.x
@@ -360,6 +362,7 @@ if test -n "$GENERATE_SHLIB_SCRIPT"; then
     DATA_ALIGNMENT=${DATA_ALIGNMENT_sc-${DATA_ALIGNMENT}}
     COMBRELOC=ldscripts/${EMULATION_NAME}.xsc.tmp
     ( echo "/* Script for --shared -z combreloc: shared library, combine & sort relocs */"
+      echo "/* Modified for Android.  */"
       . ${CUSTOMIZER_SCRIPT}
       . ${srcdir}/scripttempl/${SCRIPT_NAME}.sc
     ) | sed -e '/^ *$/d;s/[ 	]*$//' > ldscripts/${EMULATION_NAME}.xsc
