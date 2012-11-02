@@ -9683,7 +9683,7 @@ Target_arm<big_endian>::relocate_special_relocatable(
 
   Arm_address offset = reloc.get_r_offset();
   Arm_address new_offset;
-  if (offset_in_output_section != invalid_address)
+  if (offset_in_output_section != static_cast<off_t>(invalid_address))
     new_offset = offset + offset_in_output_section;
   else
     {
@@ -9702,8 +9702,8 @@ Target_arm<big_endian>::relocate_special_relocatable(
   if (!parameters->options().relocatable())
     {
       new_offset += view_address;
-      if (offset_in_output_section != invalid_address)
-	new_offset -= offset_in_output_section;
+      if (offset_in_output_section != static_cast<off_t>(invalid_address))
+        new_offset -= offset_in_output_section;
     }
 
   reloc_write.put_r_offset(new_offset);
