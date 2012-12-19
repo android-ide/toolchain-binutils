@@ -2795,6 +2795,18 @@ class Target_arm : public Sized_target<32, big_endian>
   static std::string
   tag_cpu_name_value(unsigned int);
 
+  // Query attributes object to see if integer divide instructions may be
+  // present in an object.
+  static bool
+  attributes_accept_div(int arch, int profile,
+			const Object_attribute* div_attr);
+
+  // Query attributes object to see if integer divide instructions are
+  // forbidden to be in the object.  This is not the inverse of
+  // attributes_accept_div.
+  static bool
+  attributes_forbid_div(const Object_attribute* div_attr);
+
   // Merge object attributes from input object and those in the output.
   void
   merge_object_attributes(const char*, const Attributes_section_data*);
@@ -10363,6 +10375,48 @@ Target_arm<big_endian>::tag_cpu_name_value(unsigned int value)
     }
 }
 
+// Query attributes object to see if integer divide instructions may be
+// present in an object.
+
+template<bool big_endian>
+bool
+Target_arm<big_endian>::attributes_accept_div(int arch, int profile,
+    const Object_attribute* div_attr)
+{
+  switch (div_attr->int_value())
+    {
+    case 0:
+      /* Integer divide allowed if instruction contained in archetecture.  */
+      if (arch == elfcpp::TAG_CPU_ARCH_V7 && (profile == 'R' || profile == 'M'))
+        return true;
+      else if (arch >= elfcpp::TAG_CPU_ARCH_V7E_M)
+        return true;
+      else
+        return false;
+
+    case 1:
+      /* Integer divide explicitly prohibited.  */
+      return false;
+
+    default:
+      /* Unrecognised case - treat as allowing divide everywhere.  */
+    case 2:
+      /* Integer divide allowed in ARM state.  */
+      return true;
+    }
+}
+
+// Query attributes object to see if integer divide instructions are
+// forbidden to be in the object.  This is not the inverse of
+// attributes_accept_div.
+
+template<bool big_endian>
+bool
+Target_arm<big_endian>::attributes_forbid_div(const Object_attribute* div_attr)
+{
+  return div_attr->int_value() == 1;
+}
+
 // Merge object attributes from input file called NAME with those of the
 // output.  The input object attributes are in the object pointed by PASD.
 
@@ -10731,29 +10785,31 @@ Target_arm<big_endian>::merge_object_attributes(
 	    out_attr[i].set_int_value(in_attr[i].int_value());
 	  break;
 
-	case elfcpp::Tag_DIV_use:
-	  // This tag is set to zero if we can use UDIV and SDIV in Thumb
-	  // mode on a v7-M or v7-R CPU; to one if we can not use UDIV or
-	  // SDIV at all; and to two if we can use UDIV or SDIV on a v7-A
-	  // CPU.  We will merge as follows: If the input attribute's value
-	  // is one then the output attribute's value remains unchanged.  If
-	  // the input attribute's value is zero or two then if the output
-	  // attribute's value is one the output value is set to the input
-	  // value, otherwise the output value must be the same as the
-	  // inputs.  */
-	  if (in_attr[i].int_value() != 1 && out_attr[i].int_value() != 1)
-	    {
-	      if (in_attr[i].int_value() != out_attr[i].int_value())
-		{
-		  gold_error(_("DIV usage mismatch between %s and output"),
-			     name);
-		}
-	    }
-
-	  if (in_attr[i].int_value() != 1)
+	case elfcpp::Tag_DIV_use: {
+	  // A value of zero on input means that the divide instruction may
+	  // be used if available in the base architecture as specified via
+	  // Tag_CPU_arch and Tag_CPU_arch_profile.  A value of 1 means that
+	  // the user did not want divide instructions.  A value of 2
+	  // explicitly means that divide instructions were allowed in ARM
+	  // and Thumb state.
+	  int arch = this->
+		get_aeabi_object_attribute(elfcpp::Tag_CPU_arch)->
+		int_value();
+	  int profile = this->
+		get_aeabi_object_attribute(elfcpp::Tag_CPU_arch_profile)->
+		int_value();
+	  if (in_attr[i].int_value() == out_attr[i].int_value())
+	    /* Do nothing. */ ;
+	  else if (attributes_forbid_div(&in_attr[i])
+		   && !attributes_accept_div(arch, profile, &out_attr[i]))
+	    out_attr[i].set_int_value(1);
+	  else if (attributes_forbid_div(&out_attr[i])
+		   && attributes_accept_div(arch, profile, &in_attr[i]))
 	    out_attr[i].set_int_value(in_attr[i].int_value());
-
+	  else if (in_attr[i].int_value() == 2)
+	    out_attr[i].set_int_value(in_attr[i].int_value());
 	  break;
+        }
 
 	case elfcpp::Tag_MPextension_use_legacy:
 	  // We don't output objects with Tag_MPextension_use_legacy - we
