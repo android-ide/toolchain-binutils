@@ -663,6 +663,9 @@ am__aclocal_m4_deps = $(top_srcdir)/../config/depstand.m4 \
 	$(top_srcdir)/../config/override.m4 \
 	$(top_srcdir)/../config/po.m4 \
 	$(top_srcdir)/../config/progtest.m4 \
+	$(top_srcdir)/../libtool.m4 $(top_srcdir)/../ltoptions.m4 \
+	$(top_srcdir)/../ltsugar.m4 $(top_srcdir)/../ltversion.m4 \
+	$(top_srcdir)/../lt~obsolete.m4 \
 	$(top_srcdir)/../bfd/warning.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -670,7 +673,6 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/../mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-AR = ar
 ARFLAGS = cru
 libgoldtest_a_AR = $(AR) $(ARFLAGS)
 libgoldtest_a_LIBADD =
@@ -870,8 +872,9 @@ basic_test_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_binary_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	binary_test.$(OBJEXT)
 binary_test_OBJECTS = $(am_binary_test_OBJECTS)
-binary_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(binary_test_LDFLAGS) $(LDFLAGS) -o $@
+binary_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(binary_test_LDFLAGS) $(LDFLAGS) -o $@
 @NATIVE_OR_CROSS_LINKER_TRUE@am_binary_unittest_OBJECTS =  \
 @NATIVE_OR_CROSS_LINKER_TRUE@	binary_unittest.$(OBJEXT)
 binary_unittest_OBJECTS = $(am_binary_unittest_OBJECTS)
@@ -882,30 +885,36 @@ binary_unittest_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_common_test_1_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	common_test_1.$(OBJEXT)
 common_test_1_OBJECTS = $(am_common_test_1_OBJECTS)
-common_test_1_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+common_test_1_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(common_test_1_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_common_test_2_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	common_test_1.$(OBJEXT)
 common_test_2_OBJECTS = $(am_common_test_2_OBJECTS)
-common_test_2_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+common_test_2_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(common_test_2_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am__objects_1 =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	constructor_test.$(OBJEXT)
 @GCC_TRUE@@HAVE_STATIC_TRUE@@NATIVE_LINKER_TRUE@am_constructor_static_test_OBJECTS = $(am__objects_1)
 constructor_static_test_OBJECTS =  \
 	$(am_constructor_static_test_OBJECTS)
-constructor_static_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(constructor_static_test_LDFLAGS) $(LDFLAGS) -o $@
+constructor_static_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(constructor_static_test_LDFLAGS) $(LDFLAGS) -o \
+	$@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_constructor_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	constructor_test.$(OBJEXT)
 constructor_test_OBJECTS = $(am_constructor_test_OBJECTS)
-constructor_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(constructor_test_LDFLAGS) $(LDFLAGS) -o $@
+constructor_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(constructor_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_copy_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	copy_test.$(OBJEXT)
 copy_test_OBJECTS = $(am_copy_test_OBJECTS)
-copy_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(copy_test_LDFLAGS) $(LDFLAGS) -o $@
+copy_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(copy_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_discard_locals_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	discard_locals_test.$(OBJEXT)
 discard_locals_test_OBJECTS = $(am_discard_locals_test_OBJECTS)
@@ -913,61 +922,73 @@ discard_locals_test_LDADD = $(LDADD)
 discard_locals_test_DEPENDENCIES = libgoldtest.a ../libgold.a \
 	../../libiberty/libiberty.a $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-discard_locals_test_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+discard_locals_test_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(discard_locals_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_exception_same_shared_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_main.$(OBJEXT)
 exception_same_shared_test_OBJECTS =  \
 	$(am_exception_same_shared_test_OBJECTS)
-exception_same_shared_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+exception_same_shared_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(exception_same_shared_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_exception_separate_shared_12_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_main.$(OBJEXT)
 exception_separate_shared_12_test_OBJECTS =  \
 	$(am_exception_separate_shared_12_test_OBJECTS)
-exception_separate_shared_12_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(exception_separate_shared_12_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
+exception_separate_shared_12_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(exception_separate_shared_12_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_exception_separate_shared_21_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_main.$(OBJEXT)
 exception_separate_shared_21_test_OBJECTS =  \
 	$(am_exception_separate_shared_21_test_OBJECTS)
-exception_separate_shared_21_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(exception_separate_shared_21_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
+exception_separate_shared_21_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(exception_separate_shared_21_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_exception_shared_1_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_2.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_main.$(OBJEXT)
 exception_shared_1_test_OBJECTS =  \
 	$(am_exception_shared_1_test_OBJECTS)
-exception_shared_1_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(exception_shared_1_test_LDFLAGS) $(LDFLAGS) -o $@
+exception_shared_1_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(exception_shared_1_test_LDFLAGS) $(LDFLAGS) -o \
+	$@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_exception_shared_2_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_1.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_main.$(OBJEXT)
 exception_shared_2_test_OBJECTS =  \
 	$(am_exception_shared_2_test_OBJECTS)
-exception_shared_2_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(exception_shared_2_test_LDFLAGS) $(LDFLAGS) -o $@
+exception_shared_2_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(exception_shared_2_test_LDFLAGS) $(LDFLAGS) -o \
+	$@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am__objects_2 =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_main.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_1.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_2.$(OBJEXT)
 @GCC_TRUE@@HAVE_STATIC_TRUE@@NATIVE_LINKER_TRUE@am_exception_static_test_OBJECTS = $(am__objects_2)
 exception_static_test_OBJECTS = $(am_exception_static_test_OBJECTS)
-exception_static_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(exception_static_test_LDFLAGS) $(LDFLAGS) -o $@
+exception_static_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(exception_static_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_exception_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_main.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_1.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exception_test_2.$(OBJEXT)
 exception_test_OBJECTS = $(am_exception_test_OBJECTS)
-exception_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(exception_test_LDFLAGS) $(LDFLAGS) -o $@
+exception_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(exception_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_exclude_libs_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	exclude_libs_test.$(OBJEXT)
 exclude_libs_test_OBJECTS = $(am_exclude_libs_test_OBJECTS)
-exclude_libs_test_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+exclude_libs_test_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(exclude_libs_test_LDFLAGS) $(LDFLAGS) -o $@
 flagstest_compress_debug_sections_SOURCES =  \
 	flagstest_compress_debug_sections.c
@@ -1008,8 +1029,9 @@ icf_virtual_function_folding_test_DEPENDENCIES = libgoldtest.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 @GCC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncmain1_OBJECTS = ifuncmain1.$(OBJEXT)
 ifuncmain1_OBJECTS = $(am_ifuncmain1_OBJECTS)
-ifuncmain1_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(ifuncmain1_LDFLAGS) \
-	$(LDFLAGS) -o $@
+ifuncmain1_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(ifuncmain1_LDFLAGS) $(LDFLAGS) -o $@
 ifuncmain1pic_SOURCES = ifuncmain1pic.c
 ifuncmain1pic_OBJECTS = ifuncmain1pic.$(OBJEXT)
 ifuncmain1pic_LDADD = $(LDADD)
@@ -1030,7 +1052,8 @@ ifuncmain1pie_DEPENDENCIES = libgoldtest.a ../libgold.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 @GCC_TRUE@@HAVE_STATIC_TRUE@@IFUNC_STATIC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncmain1static_OBJECTS = ifuncmain1.$(OBJEXT)
 ifuncmain1static_OBJECTS = $(am_ifuncmain1static_OBJECTS)
-ifuncmain1static_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+ifuncmain1static_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(ifuncmain1static_LDFLAGS) $(LDFLAGS) -o $@
 ifuncmain1staticpic_SOURCES = ifuncmain1staticpic.c
 ifuncmain1staticpic_OBJECTS = ifuncmain1staticpic.$(OBJEXT)
@@ -1046,7 +1069,8 @@ ifuncmain1staticpie_DEPENDENCIES = libgoldtest.a ../libgold.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 @GCC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncmain1vis_OBJECTS = ifuncmain1vis.$(OBJEXT)
 ifuncmain1vis_OBJECTS = $(am_ifuncmain1vis_OBJECTS)
-ifuncmain1vis_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+ifuncmain1vis_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(ifuncmain1vis_LDFLAGS) $(LDFLAGS) -o $@
 ifuncmain1vispic_SOURCES = ifuncmain1vispic.c
 ifuncmain1vispic_OBJECTS = ifuncmain1vispic.$(OBJEXT)
@@ -1063,8 +1087,9 @@ ifuncmain1vispie_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncmain2_OBJECTS = ifuncmain2.$(OBJEXT) \
 @GCC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@	ifuncdep2.$(OBJEXT)
 ifuncmain2_OBJECTS = $(am_ifuncmain2_OBJECTS)
-ifuncmain2_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(ifuncmain2_LDFLAGS) \
-	$(LDFLAGS) -o $@
+ifuncmain2_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(ifuncmain2_LDFLAGS) $(LDFLAGS) -o $@
 ifuncmain2pic_SOURCES = ifuncmain2pic.c
 ifuncmain2pic_OBJECTS = ifuncmain2pic.$(OBJEXT)
 ifuncmain2pic_LDADD = $(LDADD)
@@ -1080,16 +1105,19 @@ ifuncmain2picstatic_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@HAVE_STATIC_TRUE@@IFUNC_STATIC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncmain2static_OBJECTS = ifuncmain2.$(OBJEXT) \
 @GCC_TRUE@@HAVE_STATIC_TRUE@@IFUNC_STATIC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@	ifuncdep2.$(OBJEXT)
 ifuncmain2static_OBJECTS = $(am_ifuncmain2static_OBJECTS)
-ifuncmain2static_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+ifuncmain2static_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(ifuncmain2static_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncmain3_OBJECTS = ifuncmain3.$(OBJEXT)
 ifuncmain3_OBJECTS = $(am_ifuncmain3_OBJECTS)
-ifuncmain3_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(ifuncmain3_LDFLAGS) \
-	$(LDFLAGS) -o $@
+ifuncmain3_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(ifuncmain3_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncmain4_OBJECTS = ifuncmain4.$(OBJEXT)
 ifuncmain4_OBJECTS = $(am_ifuncmain4_OBJECTS)
-ifuncmain4_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(ifuncmain4_LDFLAGS) \
-	$(LDFLAGS) -o $@
+ifuncmain4_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(ifuncmain4_LDFLAGS) $(LDFLAGS) -o $@
 ifuncmain4picstatic_SOURCES = ifuncmain4picstatic.c
 ifuncmain4picstatic_OBJECTS = ifuncmain4picstatic.$(OBJEXT)
 ifuncmain4picstatic_LDADD = $(LDADD)
@@ -1098,12 +1126,14 @@ ifuncmain4picstatic_DEPENDENCIES = libgoldtest.a ../libgold.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 @GCC_TRUE@@HAVE_STATIC_TRUE@@IFUNC_STATIC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncmain4static_OBJECTS = ifuncmain4.$(OBJEXT)
 ifuncmain4static_OBJECTS = $(am_ifuncmain4static_OBJECTS)
-ifuncmain4static_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+ifuncmain4static_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(ifuncmain4static_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncmain5_OBJECTS = ifuncmain5.$(OBJEXT)
 ifuncmain5_OBJECTS = $(am_ifuncmain5_OBJECTS)
-ifuncmain5_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(ifuncmain5_LDFLAGS) \
-	$(LDFLAGS) -o $@
+ifuncmain5_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(ifuncmain5_LDFLAGS) $(LDFLAGS) -o $@
 ifuncmain5pic_SOURCES = ifuncmain5pic.c
 ifuncmain5pic_OBJECTS = ifuncmain5pic.$(OBJEXT)
 ifuncmain5pic_LDADD = $(LDADD)
@@ -1124,7 +1154,8 @@ ifuncmain5pie_DEPENDENCIES = libgoldtest.a ../libgold.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 @GCC_TRUE@@HAVE_STATIC_TRUE@@IFUNC_STATIC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncmain5static_OBJECTS = ifuncmain5.$(OBJEXT)
 ifuncmain5static_OBJECTS = $(am_ifuncmain5static_OBJECTS)
-ifuncmain5static_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+ifuncmain5static_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(ifuncmain5static_LDFLAGS) $(LDFLAGS) -o $@
 ifuncmain5staticpic_SOURCES = ifuncmain5staticpic.c
 ifuncmain5staticpic_OBJECTS = ifuncmain5staticpic.$(OBJEXT)
@@ -1140,8 +1171,9 @@ ifuncmain6pie_DEPENDENCIES = libgoldtest.a ../libgold.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 @GCC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncmain7_OBJECTS = ifuncmain7.$(OBJEXT)
 ifuncmain7_OBJECTS = $(am_ifuncmain7_OBJECTS)
-ifuncmain7_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(ifuncmain7_LDFLAGS) \
-	$(LDFLAGS) -o $@
+ifuncmain7_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(ifuncmain7_LDFLAGS) $(LDFLAGS) -o $@
 ifuncmain7pic_SOURCES = ifuncmain7pic.c
 ifuncmain7pic_OBJECTS = ifuncmain7pic.$(OBJEXT)
 ifuncmain7pic_LDADD = $(LDADD)
@@ -1162,12 +1194,14 @@ ifuncmain7pie_DEPENDENCIES = libgoldtest.a ../libgold.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 @GCC_TRUE@@HAVE_STATIC_TRUE@@IFUNC_STATIC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncmain7static_OBJECTS = ifuncmain7.$(OBJEXT)
 ifuncmain7static_OBJECTS = $(am_ifuncmain7static_OBJECTS)
-ifuncmain7static_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+ifuncmain7static_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(ifuncmain7static_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@am_ifuncvar_OBJECTS =  \
 @GCC_TRUE@@IFUNC_TRUE@@NATIVE_LINKER_TRUE@	ifuncvar3.$(OBJEXT)
 ifuncvar_OBJECTS = $(am_ifuncvar_OBJECTS)
-ifuncvar_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(ifuncvar_LDFLAGS) \
+ifuncvar_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(ifuncvar_LDFLAGS) \
 	$(LDFLAGS) -o $@
 incremental_comdat_test_1_SOURCES = incremental_comdat_test_1.c
 incremental_comdat_test_1_OBJECTS =  \
@@ -1222,31 +1256,37 @@ incremental_test_6_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_initpri1_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	initpri1.$(OBJEXT)
 initpri1_OBJECTS = $(am_initpri1_OBJECTS)
-initpri1_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(initpri1_LDFLAGS) \
+initpri1_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(initpri1_LDFLAGS) \
 	$(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_initpri2_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	initpri2.$(OBJEXT)
 initpri2_OBJECTS = $(am_initpri2_OBJECTS)
-initpri2_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(initpri2_LDFLAGS) \
+initpri2_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(initpri2_LDFLAGS) \
 	$(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_initpri3a_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	initpri3.$(OBJEXT)
 initpri3a_OBJECTS = $(am_initpri3a_OBJECTS)
-initpri3a_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(initpri3a_LDFLAGS) \
-	$(LDFLAGS) -o $@
+initpri3a_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(initpri3a_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_justsyms_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	justsyms_1.$(OBJEXT)
 justsyms_OBJECTS = $(am_justsyms_OBJECTS)
-justsyms_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(justsyms_LDFLAGS) $(LDFLAGS) -o $@
+justsyms_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(justsyms_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_justsyms_exec_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	justsyms_exec.$(OBJEXT)
 justsyms_exec_OBJECTS = $(am_justsyms_exec_OBJECTS)
-justsyms_exec_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+justsyms_exec_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(justsyms_exec_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@MCMODEL_MEDIUM_TRUE@@NATIVE_LINKER_TRUE@am_large_OBJECTS = large-large.$(OBJEXT)
 large_OBJECTS = $(am_large_OBJECTS)
-large_LINK = $(CCLD) $(large_CFLAGS) $(CFLAGS) $(large_LDFLAGS) \
+large_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(large_CFLAGS) $(CFLAGS) $(large_LDFLAGS) \
 	$(LDFLAGS) -o $@
 @NATIVE_OR_CROSS_LINKER_TRUE@am_leb128_unittest_OBJECTS =  \
 @NATIVE_OR_CROSS_LINKER_TRUE@	leb128_unittest.$(OBJEXT)
@@ -1270,8 +1310,9 @@ many_sections_r_test_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_many_sections_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	many_sections_test.$(OBJEXT)
 many_sections_test_OBJECTS = $(am_many_sections_test_OBJECTS)
-many_sections_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(many_sections_test_LDFLAGS) $(LDFLAGS) -o $@
+many_sections_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(many_sections_test_LDFLAGS) $(LDFLAGS) -o $@
 @NATIVE_OR_CROSS_LINKER_TRUE@am_object_unittest_OBJECTS =  \
 @NATIVE_OR_CROSS_LINKER_TRUE@	object_unittest.$(OBJEXT)
 object_unittest_OBJECTS = $(am_object_unittest_OBJECTS)
@@ -1338,46 +1379,54 @@ plugin_test_8_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	protected_main_2.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	protected_main_3.$(OBJEXT)
 protected_1_OBJECTS = $(am_protected_1_OBJECTS)
-protected_1_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(protected_1_LDFLAGS) $(LDFLAGS) -o $@
+protected_1_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(protected_1_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_protected_2_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	protected_main_1.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	protected_3.$(OBJEXT)
 protected_2_OBJECTS = $(am_protected_2_OBJECTS)
-protected_2_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(protected_2_LDFLAGS) $(LDFLAGS) -o $@
+protected_2_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(protected_2_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_relro_now_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	relro_test_main.$(OBJEXT)
 relro_now_test_OBJECTS = $(am_relro_now_test_OBJECTS)
-relro_now_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(relro_now_test_LDFLAGS) $(LDFLAGS) -o $@
+relro_now_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(relro_now_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_relro_script_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	relro_test_main.$(OBJEXT)
 relro_script_test_OBJECTS = $(am_relro_script_test_OBJECTS)
-relro_script_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(relro_script_test_LDFLAGS) $(LDFLAGS) -o $@
+relro_script_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(relro_script_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_relro_strip_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	relro_test_main.$(OBJEXT)
 relro_strip_test_OBJECTS = $(am_relro_strip_test_OBJECTS)
-relro_strip_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(relro_strip_test_LDFLAGS) $(LDFLAGS) -o $@
+relro_strip_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(relro_strip_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_relro_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	relro_test_main.$(OBJEXT)
 relro_test_OBJECTS = $(am_relro_test_OBJECTS)
-relro_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(relro_test_LDFLAGS) $(LDFLAGS) -o $@
+relro_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(relro_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_script_test_1_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	script_test_1.$(OBJEXT)
 script_test_1_OBJECTS = $(am_script_test_1_OBJECTS)
-script_test_1_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(script_test_1_LDFLAGS) $(LDFLAGS) -o $@
+script_test_1_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(script_test_1_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_script_test_2_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	script_test_2.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	script_test_2a.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	script_test_2b.$(OBJEXT)
 script_test_2_OBJECTS = $(am_script_test_2_OBJECTS)
-script_test_2_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(script_test_2_LDFLAGS) $(LDFLAGS) -o $@
+script_test_2_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(script_test_2_LDFLAGS) $(LDFLAGS) -o $@
 script_test_3_SOURCES = script_test_3.c
 script_test_3_OBJECTS = script_test_3.$(OBJEXT)
 script_test_3_LDADD = $(LDADD)
@@ -1387,8 +1436,9 @@ script_test_3_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_searched_file_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	searched_file_test.$(OBJEXT)
 searched_file_test_OBJECTS = $(am_searched_file_test_OBJECTS)
-searched_file_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(searched_file_test_LDFLAGS) $(LDFLAGS) -o $@
+searched_file_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(searched_file_test_LDFLAGS) $(LDFLAGS) -o $@
 start_lib_test_SOURCES = start_lib_test.c
 start_lib_test_OBJECTS = start_lib_test.$(OBJEXT)
 start_lib_test_LDADD = $(LDADD)
@@ -1398,13 +1448,15 @@ start_lib_test_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_thin_archive_test_1_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	thin_archive_main.$(OBJEXT)
 thin_archive_test_1_OBJECTS = $(am_thin_archive_test_1_OBJECTS)
-thin_archive_test_1_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(thin_archive_test_1_LDFLAGS) $(LDFLAGS) -o $@
+thin_archive_test_1_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(thin_archive_test_1_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_thin_archive_test_2_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	thin_archive_main.$(OBJEXT)
 thin_archive_test_2_OBJECTS = $(am_thin_archive_test_2_OBJECTS)
-thin_archive_test_2_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(thin_archive_test_2_LDFLAGS) $(LDFLAGS) -o $@
+thin_archive_test_2_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(thin_archive_test_2_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@am__objects_3 =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@	tls_test.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@	tls_test_file2.$(OBJEXT) \
@@ -1414,12 +1466,14 @@ thin_archive_test_2_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 tls_phdrs_script_test_OBJECTS = $(am_tls_phdrs_script_test_OBJECTS)
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@am__DEPENDENCIES_2 =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@	tls_test_c.o
-tls_phdrs_script_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(tls_phdrs_script_test_LDFLAGS) $(LDFLAGS) -o $@
+tls_phdrs_script_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(tls_phdrs_script_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@am_tls_pic_test_OBJECTS = tls_test_main.$(OBJEXT)
 tls_pic_test_OBJECTS = $(am_tls_pic_test_OBJECTS)
-tls_pic_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(tls_pic_test_LDFLAGS) $(LDFLAGS) -o $@
+tls_pic_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(tls_pic_test_LDFLAGS) $(LDFLAGS) -o $@
 tls_pie_pic_test_SOURCES = tls_pie_pic_test.c
 tls_pie_pic_test_OBJECTS = tls_pie_pic_test.$(OBJEXT)
 tls_pie_pic_test_LDADD = $(LDADD)
@@ -1435,35 +1489,43 @@ tls_pie_test_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_tls_script_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	$(am__objects_3)
 tls_script_test_OBJECTS = $(am_tls_script_test_OBJECTS)
-tls_script_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(tls_script_test_LDFLAGS) $(LDFLAGS) -o $@
+tls_script_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(tls_script_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@am_tls_shared_gd_to_ie_test_OBJECTS = tls_test_main.$(OBJEXT)
 tls_shared_gd_to_ie_test_OBJECTS =  \
 	$(am_tls_shared_gd_to_ie_test_OBJECTS)
-tls_shared_gd_to_ie_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(tls_shared_gd_to_ie_test_LDFLAGS) $(LDFLAGS) -o $@
+tls_shared_gd_to_ie_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) $(tls_shared_gd_to_ie_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_GNU2_DIALECT_TRUE@@TLS_TRUE@am_tls_shared_gnu2_gd_to_ie_test_OBJECTS = tls_test_main.$(OBJEXT)
 tls_shared_gnu2_gd_to_ie_test_OBJECTS =  \
 	$(am_tls_shared_gnu2_gd_to_ie_test_OBJECTS)
-tls_shared_gnu2_gd_to_ie_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(tls_shared_gnu2_gd_to_ie_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
+tls_shared_gnu2_gd_to_ie_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(tls_shared_gnu2_gd_to_ie_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_DESCRIPTORS_TRUE@@TLS_GNU2_DIALECT_TRUE@@TLS_TRUE@am_tls_shared_gnu2_test_OBJECTS = tls_test_main.$(OBJEXT)
 tls_shared_gnu2_test_OBJECTS = $(am_tls_shared_gnu2_test_OBJECTS)
-tls_shared_gnu2_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(tls_shared_gnu2_test_LDFLAGS) $(LDFLAGS) -o $@
+tls_shared_gnu2_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(tls_shared_gnu2_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@am_tls_shared_ie_test_OBJECTS = tls_test_main.$(OBJEXT)
 tls_shared_ie_test_OBJECTS = $(am_tls_shared_ie_test_OBJECTS)
-tls_shared_ie_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(tls_shared_ie_test_LDFLAGS) $(LDFLAGS) -o $@
+tls_shared_ie_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(tls_shared_ie_test_LDFLAGS) $(LDFLAGS) -o $@
 @FN_PTRS_IN_SO_WITHOUT_PIC_TRUE@@GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@am_tls_shared_nonpic_test_OBJECTS = tls_test_main.$(OBJEXT)
 tls_shared_nonpic_test_OBJECTS = $(am_tls_shared_nonpic_test_OBJECTS)
-tls_shared_nonpic_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(tls_shared_nonpic_test_LDFLAGS) $(LDFLAGS) -o $@
+tls_shared_nonpic_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(tls_shared_nonpic_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@am_tls_shared_test_OBJECTS = tls_test_main.$(OBJEXT)
 tls_shared_test_OBJECTS = $(am_tls_shared_test_OBJECTS)
-tls_shared_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(tls_shared_test_LDFLAGS) $(LDFLAGS) -o $@
+tls_shared_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(tls_shared_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@am__objects_4 = tls_test_main.$(OBJEXT)
 @GCC_TRUE@@HAVE_STATIC_TRUE@@NATIVE_LINKER_TRUE@@STATIC_TLS_TRUE@@TLS_TRUE@am_tls_static_pic_test_OBJECTS = $(am__objects_4)
 tls_static_pic_test_OBJECTS = $(am_tls_static_pic_test_OBJECTS)
@@ -1471,25 +1533,29 @@ tls_static_pic_test_OBJECTS = $(am_tls_static_pic_test_OBJECTS)
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@	tls_test_pic.o \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@	tls_test_file2_pic.o \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@	tls_test_c_pic.o
-tls_static_pic_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(tls_static_pic_test_LDFLAGS) $(LDFLAGS) -o $@
+tls_static_pic_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(tls_static_pic_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@HAVE_STATIC_TRUE@@NATIVE_LINKER_TRUE@@STATIC_TLS_TRUE@@TLS_TRUE@am_tls_static_test_OBJECTS = $(am__objects_3)
 tls_static_test_OBJECTS = $(am_tls_static_test_OBJECTS)
-tls_static_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(tls_static_test_LDFLAGS) $(LDFLAGS) -o $@
+tls_static_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(tls_static_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@am_tls_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@	tls_test.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@	tls_test_file2.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@@TLS_TRUE@	tls_test_main.$(OBJEXT)
 tls_test_OBJECTS = $(am_tls_test_OBJECTS)
-tls_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(tls_test_LDFLAGS) $(LDFLAGS) -o $@
+tls_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(tls_test_LDFLAGS) $(LDFLAGS) -o $@
 @FN_PTRS_IN_SO_WITHOUT_PIC_TRUE@@GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_mixed_2_shared_test_OBJECTS = two_file_test_main.$(OBJEXT)
 two_file_mixed_2_shared_test_OBJECTS =  \
 	$(am_two_file_mixed_2_shared_test_OBJECTS)
-two_file_mixed_2_shared_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(two_file_mixed_2_shared_test_LDFLAGS) $(LDFLAGS) \
-	-o $@
+two_file_mixed_2_shared_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(two_file_mixed_2_shared_test_LDFLAGS) $(LDFLAGS) -o $@
 two_file_mixed_pie_test_SOURCES = two_file_mixed_pie_test.c
 two_file_mixed_pie_test_OBJECTS = two_file_mixed_pie_test.$(OBJEXT)
 two_file_mixed_pie_test_LDADD = $(LDADD)
@@ -1499,13 +1565,16 @@ two_file_mixed_pie_test_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @FN_PTRS_IN_SO_WITHOUT_PIC_TRUE@@GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_mixed_shared_test_OBJECTS = two_file_test_main.$(OBJEXT)
 two_file_mixed_shared_test_OBJECTS =  \
 	$(am_two_file_mixed_shared_test_OBJECTS)
-two_file_mixed_shared_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+two_file_mixed_shared_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(two_file_mixed_shared_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_pic_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_pic_test_OBJECTS = $(am_two_file_pic_test_OBJECTS)
-two_file_pic_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(two_file_pic_test_LDFLAGS) $(LDFLAGS) -o $@
+two_file_pic_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(two_file_pic_test_LDFLAGS) $(LDFLAGS) -o $@
 two_file_pie_test_SOURCES = two_file_pie_test.c
 two_file_pie_test_OBJECTS = two_file_pie_test.$(OBJEXT)
 two_file_pie_test_LDADD = $(LDADD)
@@ -1516,95 +1585,113 @@ two_file_pie_test_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_relocatable_test_OBJECTS =  \
 	$(am_two_file_relocatable_test_OBJECTS)
-two_file_relocatable_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+two_file_relocatable_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(two_file_relocatable_test_LDFLAGS) $(LDFLAGS) -o $@
 @FN_PTRS_IN_SO_WITHOUT_PIC_TRUE@@GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_same_shared_nonpic_test_OBJECTS = two_file_test_main.$(OBJEXT)
 two_file_same_shared_nonpic_test_OBJECTS =  \
 	$(am_two_file_same_shared_nonpic_test_OBJECTS)
-two_file_same_shared_nonpic_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(two_file_same_shared_nonpic_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
+two_file_same_shared_nonpic_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(two_file_same_shared_nonpic_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_same_shared_strip_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_same_shared_strip_test_OBJECTS =  \
 	$(am_two_file_same_shared_strip_test_OBJECTS)
-two_file_same_shared_strip_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(two_file_same_shared_strip_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
+two_file_same_shared_strip_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(two_file_same_shared_strip_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_same_shared_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_same_shared_test_OBJECTS =  \
 	$(am_two_file_same_shared_test_OBJECTS)
-two_file_same_shared_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+two_file_same_shared_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(two_file_same_shared_test_LDFLAGS) $(LDFLAGS) -o $@
 @FN_PTRS_IN_SO_WITHOUT_PIC_TRUE@@GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_separate_shared_12_nonpic_test_OBJECTS = two_file_test_main.$(OBJEXT)
 two_file_separate_shared_12_nonpic_test_OBJECTS =  \
 	$(am_two_file_separate_shared_12_nonpic_test_OBJECTS)
-two_file_separate_shared_12_nonpic_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(two_file_separate_shared_12_nonpic_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
+two_file_separate_shared_12_nonpic_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(two_file_separate_shared_12_nonpic_test_LDFLAGS) $(LDFLAGS) \
+	-o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_separate_shared_12_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_separate_shared_12_test_OBJECTS =  \
 	$(am_two_file_separate_shared_12_test_OBJECTS)
-two_file_separate_shared_12_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(two_file_separate_shared_12_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
+two_file_separate_shared_12_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(two_file_separate_shared_12_test_LDFLAGS) $(LDFLAGS) -o $@
 @FN_PTRS_IN_SO_WITHOUT_PIC_TRUE@@GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_separate_shared_21_nonpic_test_OBJECTS = two_file_test_main.$(OBJEXT)
 two_file_separate_shared_21_nonpic_test_OBJECTS =  \
 	$(am_two_file_separate_shared_21_nonpic_test_OBJECTS)
-two_file_separate_shared_21_nonpic_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(two_file_separate_shared_21_nonpic_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
+two_file_separate_shared_21_nonpic_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(two_file_separate_shared_21_nonpic_test_LDFLAGS) $(LDFLAGS) \
+	-o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_separate_shared_21_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_separate_shared_21_test_OBJECTS =  \
 	$(am_two_file_separate_shared_21_test_OBJECTS)
-two_file_separate_shared_21_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(two_file_separate_shared_21_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
+two_file_separate_shared_21_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(two_file_separate_shared_21_test_LDFLAGS) $(LDFLAGS) -o $@
 @FN_PTRS_IN_SO_WITHOUT_PIC_TRUE@@GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_shared_1_nonpic_test_OBJECTS = two_file_test_2.$(OBJEXT) \
 @FN_PTRS_IN_SO_WITHOUT_PIC_TRUE@@GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_shared_1_nonpic_test_OBJECTS =  \
 	$(am_two_file_shared_1_nonpic_test_OBJECTS)
-two_file_shared_1_nonpic_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(two_file_shared_1_nonpic_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
+two_file_shared_1_nonpic_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(two_file_shared_1_nonpic_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_shared_1_pic_2_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_shared_1_pic_2_test_OBJECTS =  \
 	$(am_two_file_shared_1_pic_2_test_OBJECTS)
-two_file_shared_1_pic_2_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(two_file_shared_1_pic_2_test_LDFLAGS) $(LDFLAGS) \
-	-o $@
+two_file_shared_1_pic_2_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(two_file_shared_1_pic_2_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_shared_1_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_2.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_shared_1_test_OBJECTS = $(am_two_file_shared_1_test_OBJECTS)
-two_file_shared_1_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(two_file_shared_1_test_LDFLAGS) $(LDFLAGS) -o $@
+two_file_shared_1_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(two_file_shared_1_test_LDFLAGS) $(LDFLAGS) -o $@
 @FN_PTRS_IN_SO_WITHOUT_PIC_TRUE@@GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_shared_2_nonpic_test_OBJECTS = two_file_test_1.$(OBJEXT) \
 @FN_PTRS_IN_SO_WITHOUT_PIC_TRUE@@GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_1b.$(OBJEXT) \
 @FN_PTRS_IN_SO_WITHOUT_PIC_TRUE@@GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_shared_2_nonpic_test_OBJECTS =  \
 	$(am_two_file_shared_2_nonpic_test_OBJECTS)
-two_file_shared_2_nonpic_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(two_file_shared_2_nonpic_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
+two_file_shared_2_nonpic_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(two_file_shared_2_nonpic_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_shared_2_pic_1_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_shared_2_pic_1_test_OBJECTS =  \
 	$(am_two_file_shared_2_pic_1_test_OBJECTS)
-two_file_shared_2_pic_1_test_LINK = $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(two_file_shared_2_pic_1_test_LDFLAGS) $(LDFLAGS) \
-	-o $@
+two_file_shared_2_pic_1_test_LINK = $(LIBTOOL) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(two_file_shared_2_pic_1_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_shared_2_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_1.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_1b.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_shared_2_test_OBJECTS = $(am_two_file_shared_2_test_OBJECTS)
-two_file_shared_2_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(two_file_shared_2_test_LDFLAGS) $(LDFLAGS) -o $@
+two_file_shared_2_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(two_file_shared_2_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am__objects_5 =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_1.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_1b.$(OBJEXT) \
@@ -1612,8 +1699,9 @@ two_file_shared_2_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 @GCC_TRUE@@HAVE_STATIC_TRUE@@NATIVE_LINKER_TRUE@am_two_file_static_test_OBJECTS = $(am__objects_5)
 two_file_static_test_OBJECTS = $(am_two_file_static_test_OBJECTS)
-two_file_static_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(two_file_static_test_LDFLAGS) $(LDFLAGS) -o $@
+two_file_static_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(two_file_static_test_LDFLAGS) $(LDFLAGS) -o $@
 two_file_strip_test_SOURCES = two_file_strip_test.c
 two_file_strip_test_OBJECTS = two_file_strip_test.$(OBJEXT)
 two_file_strip_test_LDADD = $(LDADD)
@@ -1626,48 +1714,57 @@ two_file_strip_test_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_2.$(OBJEXT) \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 two_file_test_OBJECTS = $(am_two_file_test_OBJECTS)
-two_file_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(two_file_test_LDFLAGS) $(LDFLAGS) -o $@
+two_file_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(two_file_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_ver_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	ver_test_main.$(OBJEXT)
 ver_test_OBJECTS = $(am_ver_test_OBJECTS)
-ver_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(ver_test_LDFLAGS) $(LDFLAGS) -o $@
+ver_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(ver_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_ver_test_11_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	ver_test_main_2.$(OBJEXT)
 ver_test_11_OBJECTS = $(am_ver_test_11_OBJECTS)
-ver_test_11_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(ver_test_11_LDFLAGS) $(LDFLAGS) -o $@
+ver_test_11_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(ver_test_11_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_ver_test_12_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	ver_test_main_2.$(OBJEXT)
 ver_test_12_OBJECTS = $(am_ver_test_12_OBJECTS)
-ver_test_12_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(ver_test_12_LDFLAGS) $(LDFLAGS) -o $@
+ver_test_12_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(ver_test_12_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_ver_test_2_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	ver_test_main_2.$(OBJEXT)
 ver_test_2_OBJECTS = $(am_ver_test_2_OBJECTS)
-ver_test_2_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(ver_test_2_LDFLAGS) $(LDFLAGS) -o $@
+ver_test_2_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(ver_test_2_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_ver_test_6_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	ver_test_6.$(OBJEXT)
 ver_test_6_OBJECTS = $(am_ver_test_6_OBJECTS)
-ver_test_6_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(ver_test_6_LDFLAGS) \
-	$(LDFLAGS) -o $@
+ver_test_6_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(ver_test_6_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_ver_test_8_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	two_file_test_main.$(OBJEXT)
 ver_test_8_OBJECTS = $(am_ver_test_8_OBJECTS)
-ver_test_8_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(ver_test_8_LDFLAGS) $(LDFLAGS) -o $@
+ver_test_8_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(ver_test_8_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_ver_test_9_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	ver_test_main.$(OBJEXT)
 ver_test_9_OBJECTS = $(am_ver_test_9_OBJECTS)
-ver_test_9_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(ver_test_9_LDFLAGS) $(LDFLAGS) -o $@
+ver_test_9_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(ver_test_9_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_weak_alias_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	weak_alias_test_main.$(OBJEXT)
 weak_alias_test_OBJECTS = $(am_weak_alias_test_OBJECTS)
-weak_alias_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(weak_alias_test_LDFLAGS) $(LDFLAGS) -o $@
+weak_alias_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(weak_alias_test_LDFLAGS) $(LDFLAGS) -o $@
 weak_plt_SOURCES = weak_plt.c
 weak_plt_OBJECTS = weak_plt.$(OBJEXT)
 weak_plt_LDADD = $(LDADD)
@@ -1677,30 +1774,42 @@ weak_plt_DEPENDENCIES = libgoldtest.a ../libgold.a \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_weak_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	weak_test.$(OBJEXT)
 weak_test_OBJECTS = $(am_weak_test_OBJECTS)
-weak_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(weak_test_LDFLAGS) $(LDFLAGS) -o $@
+weak_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(weak_test_LDFLAGS) $(LDFLAGS) -o $@
 @FN_PTRS_IN_SO_WITHOUT_PIC_TRUE@@GCC_TRUE@@NATIVE_LINKER_TRUE@am_weak_undef_nonpic_test_OBJECTS = weak_undef_test.$(OBJEXT)
 weak_undef_nonpic_test_OBJECTS = $(am_weak_undef_nonpic_test_OBJECTS)
-weak_undef_nonpic_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(weak_undef_nonpic_test_LDFLAGS) $(LDFLAGS) -o $@
+weak_undef_nonpic_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(weak_undef_nonpic_test_LDFLAGS) $(LDFLAGS) -o $@
 @GCC_TRUE@@NATIVE_LINKER_TRUE@am_weak_undef_test_OBJECTS =  \
 @GCC_TRUE@@NATIVE_LINKER_TRUE@	weak_undef_test.$(OBJEXT)
 weak_undef_test_OBJECTS = $(am_weak_undef_test_OBJECTS)
-weak_undef_test_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(weak_undef_test_LDFLAGS) $(LDFLAGS) -o $@
+weak_undef_test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(weak_undef_test_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
-CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
-	-o $@
+CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 SOURCES = $(libgoldtest_a_SOURCES) basic_pic_test.c basic_pie_test.c \
 	basic_static_pic_test.c basic_static_test.c basic_test.c \
 	$(binary_test_SOURCES) $(binary_unittest_SOURCES) \
@@ -1855,6 +1964,7 @@ TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 TEST_LOGS_TMP = $(TEST_LOGS:.log=.log-t)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
+AR = @AR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -1874,11 +1984,14 @@ CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DSYMUTIL = @DSYMUTIL@
+DUMPBIN = @DUMPBIN@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FGREP = @FGREP@
 GENCAT = @GENCAT@
 GMSGFMT = @GMSGFMT@
 GOLD_LDADD = @GOLD_LDADD@
@@ -1891,12 +2004,15 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INSTOBJEXT = @INSTOBJEXT@
+LD = @LD@
 LDFLAGS = @LDFLAGS@
 LFS_CFLAGS = @LFS_CFLAGS@
 LIBINTL = @LIBINTL@
 LIBINTL_DEP = @LIBINTL_DEP@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
+LIBTOOL = @LIBTOOL@
+LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
@@ -1906,8 +2022,12 @@ MKINSTALLDIRS = @MKINSTALLDIRS@
 MSGFMT = @MSGFMT@
 MSGMERGE = @MSGMERGE@
 NM = @NM@
+NMEDIT = @NMEDIT@
 NO_WERROR = @NO_WERROR@
+OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OTOOL = @OTOOL@
+OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -1919,6 +2039,7 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 POSUB = @POSUB@
 RANDOM_SEED_CFLAGS = @RANDOM_SEED_CFLAGS@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -1936,6 +2057,7 @@ abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
+ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
@@ -1968,6 +2090,7 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_cv_dlopen_libs = @lt_cv_dlopen_libs@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -2492,7 +2615,7 @@ all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cc .html .log .o .obj .test .test$(EXEEXT)
+.SUFFIXES: .c .cc .html .lo .log .o .obj .test .test$(EXEEXT)
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -2532,7 +2655,13 @@ libgoldtest.a: $(libgoldtest_a_OBJECTS) $(libgoldtest_a_DEPENDENCIES)
 	$(RANLIB) libgoldtest.a
 
 clean-checkPROGRAMS:
-	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
+	@list='$(check_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
 @GCC_FALSE@basic_pic_test$(EXEEXT): $(basic_pic_test_OBJECTS) $(basic_pic_test_DEPENDENCIES) 
 @GCC_FALSE@	@rm -f basic_pic_test$(EXEEXT)
 @GCC_FALSE@	$(LINK) $(basic_pic_test_OBJECTS) $(basic_pic_test_LDADD) $(LIBS)
@@ -3421,6 +3550,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
 
+.c.lo:
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
 large-large.o: large.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(large_CFLAGS) $(CFLAGS) -MT large-large.o -MD -MP -MF $(DEPDIR)/large-large.Tpo -c -o large-large.o `test -f 'large.c' || echo '$(srcdir)/'`large.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/large-large.Tpo $(DEPDIR)/large-large.Po
@@ -3448,6 +3584,19 @@ large-large.obj: large.c
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.cc.lo:
+@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -4128,7 +4277,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-checkLIBRARIES clean-checkPROGRAMS clean-generic \
-	mostlyclean-am
+	clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -4183,7 +4332,8 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -4200,15 +4350,16 @@ uninstall-am:
 
 .PHONY: CTAGS GTAGS all all-am check check-TESTS check-am check-html \
 	clean clean-checkLIBRARIES clean-checkPROGRAMS clean-generic \
-	ctags distclean distclean-compile distclean-generic \
-	distclean-tags dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	clean-libtool ctags distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags dvi dvi-am \
+	html html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	recheck recheck-html tags uninstall uninstall-am
 
 

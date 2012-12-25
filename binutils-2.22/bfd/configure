@@ -606,6 +606,7 @@ havevecs
 tdefaults
 bfd_ufile_ptr
 bfd_file_ptr
+lt_cv_dlopen_libs
 supports_plugins
 bfd_default_target_size
 bfd_machines
@@ -11404,7 +11405,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 11407 "configure"
+#line 11408 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11510,7 +11511,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 11513 "configure"
+#line 11514 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -15618,6 +15619,7 @@ if test "$plugins" = "yes"; then
 else
   supports_plugins=0
 fi
+
 
 
 # Determine the host dependant file_ptr a.k.a. off_t type.  In order

@@ -272,6 +272,10 @@ AC_PROG_LN_S
 
 AC_GNU_SOURCE
 
+# required when plugins enabled
+LT_INIT([dlopen])
+AC_SUBST(lt_cv_dlopen_libs)
+
 ZW_GNU_GETTEXT_SISTER_DIR
 AM_PO_SUBDIRS
 
@@ -499,6 +503,9 @@ AC_LANG_PUSH(C++)
 AC_CHECK_HEADERS(tr1/unordered_set tr1/unordered_map)
 AC_CHECK_HEADERS(ext/hash_map ext/hash_set)
 AC_CHECK_HEADERS(byteswap.h)
+
+AC_CHECK_HEADERS(windows.h dlfcn.h)
+
 AC_CHECK_FUNCS(mallinfo posix_fallocate fallocate readv sysconf times)
 AC_CHECK_DECLS([basename, ffs, asprintf, vasprintf, snprintf, vsnprintf, strverscmp, strndup, memmem])
 
