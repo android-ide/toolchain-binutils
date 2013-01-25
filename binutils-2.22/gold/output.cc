@@ -3259,7 +3259,11 @@ class Output_section::Input_section_sort_entry
   // in order to better support gcc, and we need to be compatible.
   bool
   match_file_name(const char* file_name) const
-  { return Layout::match_file_name(this->input_section_.relobj(), file_name); }
+  {
+    if (this->input_section_.is_output_section_data())
+      return false;
+    return Layout::match_file_name(this->input_section_.relobj(), file_name);
+  }
 
   // Returns 1 if THIS should appear before S in section order, -1 if S
   // appears before THIS and 0 if they are not comparable.
@@ -3329,6 +3333,19 @@ Output_section::Input_section_sort_compare::operator()(
       if (s2.section_has_name())
 	return false;
       return s1.index() < s2.index();
+    }
+
+  // Some input section names have special ordering requirements.
+  int o1 = Layout::special_ordering_of_input_section(s1.section_name().c_str());
+  int o2 = Layout::special_ordering_of_input_section(s2.section_name().c_str());
+  if (o1 != o2)
+    {
+      if (o1 < 0)
+	return false;
+      else if (o2 < 0)
+	return true;
+      else
+	return o1 < o2;
     }
 
   // A section with a priority follows a section without a priority.
