@@ -20,7 +20,7 @@ AM_CPPFLAGS = \
 LIBIBERTY = ../libiberty/libiberty.a
 
 if PLUGINS
-LIBDL = -ldl
+LIBDL = @DLOPEN_LIBS@
 endif
 
 if THREADS
