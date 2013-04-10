@@ -528,6 +528,14 @@ class Layout
   get_section_order_map()
   { return &this->section_order_map_; }
 
+  // Some input sections require special ordering, for compatibility
+  // with GNU ld.  Given the name of an input section, return -1 if it
+  // does not require special ordering.  Otherwise, return the index
+  // by which it should be ordered compared to other input sections
+  // that require special ordering.
+  static int
+  special_ordering_of_input_section(const char* name);
+
   bool
   is_section_ordering_specified()
   { return this->section_ordering_specified_; }
