@@ -606,6 +606,7 @@ havevecs
 tdefaults
 bfd_ufile_ptr
 bfd_file_ptr
+lt_cv_dlopen_libs
 supports_plugins
 bfd_default_target_size
 bfd_machines
@@ -15620,6 +15621,7 @@ if test "$plugins" = "yes"; then
 else
   supports_plugins=0
 fi
+
 
 
 # Determine the host dependant file_ptr a.k.a. off_t type.  In order
