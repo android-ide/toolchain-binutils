@@ -1,6 +1,7 @@
 // output.cc -- manage the output file for gold
 
-// Copyright 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+// Copyright 2006, 2007, 2008, 2009, 2010, 2011, 2012
+// Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -1361,9 +1362,9 @@ Output_data_group<size, big_endian>::do_write(Output_file* of)
 
 // Write out the entry.
 
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 void
-Output_data_got<size, big_endian>::Got_entry::write(unsigned char* pov) const
+Output_data_got<got_size, big_endian>::Got_entry::write(unsigned char* pov) const
 {
   Valtype val = 0;
 
@@ -1380,12 +1381,34 @@ Output_data_got<size, big_endian>::Got_entry::write(unsigned char* pov) const
 		 + gsym->plt_offset());
 	else
 	  {
-	    Sized_symbol<size>* sgsym;
-	    // This cast is a bit ugly.  We don't want to put a
-	    // virtual method in Symbol, because we want Symbol to be
-	    // as small as possible.
-	    sgsym = static_cast<Sized_symbol<size>*>(gsym);
-	    val = sgsym->value();
+	    switch (parameters->size_and_endianness())
+	      {
+#if defined(HAVE_TARGET_32_LITTLE) || defined(HAVE_TARGET_32_BIG)
+	      case Parameters::TARGET_32_LITTLE:
+	      case Parameters::TARGET_32_BIG:
+		{
+		  // This cast is ugly.  We don't want to put a
+		  // virtual method in Symbol, because we want Symbol
+		  // to be as small as possible.
+		  Sized_symbol<32>::Value_type v;
+		  v = static_cast<Sized_symbol<32>*>(gsym)->value();
+		  val = convert_types<Valtype, Sized_symbol<32>::Value_type>(v);
+		}
+		break;
+#endif
+#if defined(HAVE_TARGET_64_LITTLE) || defined(HAVE_TARGET_64_BIG)
+	      case Parameters::TARGET_64_LITTLE:
+	      case Parameters::TARGET_64_BIG:
+		{
+		  Sized_symbol<64>::Value_type v;
+		  v = static_cast<Sized_symbol<64>*>(gsym)->value();
+		  val = convert_types<Valtype, Sized_symbol<64>::Value_type>(v);
+		}
+		break;
+#endif
+	      default:
+		gold_unreachable();
+	      }
 	  }
       }
       break;
@@ -1420,7 +1443,7 @@ Output_data_got<size, big_endian>::Got_entry::write(unsigned char* pov) const
       break;
     }
 
-  elfcpp::Swap<size, big_endian>::writeval(pov, val);
+  elfcpp::Swap<got_size, big_endian>::writeval(pov, val);
 }
 
 // Output_data_got methods.
@@ -1429,9 +1452,9 @@ Output_data_got<size, big_endian>::Got_entry::write(unsigned char* pov) const
 // this is a new GOT entry, false if the symbol already had a GOT
 // entry.
 
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 bool
-Output_data_got<size, big_endian>::add_global(
+Output_data_got<got_size, big_endian>::add_global(
     Symbol* gsym,
     unsigned int got_type)
 {
@@ -1445,10 +1468,10 @@ Output_data_got<size, big_endian>::add_global(
 
 // Like add_global, but use the PLT offset.
 
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 bool
-Output_data_got<size, big_endian>::add_global_plt(Symbol* gsym,
-						  unsigned int got_type)
+Output_data_got<got_size, big_endian>::add_global_plt(Symbol* gsym,
+						      unsigned int got_type)
 {
   if (gsym->has_got_offset(got_type))
     return false;
@@ -1461,9 +1484,9 @@ Output_data_got<size, big_endian>::add_global_plt(Symbol* gsym,
 // Add an entry for a global symbol to the GOT, and add a dynamic
 // relocation of type R_TYPE for the GOT entry.
 
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 void
-Output_data_got<size, big_endian>::add_global_with_rel(
+Output_data_got<got_size, big_endian>::add_global_with_rel(
     Symbol* gsym,
     unsigned int got_type,
     Output_data_reloc_generic* rel_dyn,
@@ -1480,9 +1503,9 @@ Output_data_got<size, big_endian>::add_global_with_rel(
 // Add a pair of entries for a global symbol to the GOT, and add
 // dynamic relocations of type R_TYPE_1 and R_TYPE_2, respectively.
 // If R_TYPE_2 == 0, add the second entry with no relocation.
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 void
-Output_data_got<size, big_endian>::add_global_pair_with_rel(
+Output_data_got<got_size, big_endian>::add_global_pair_with_rel(
     Symbol* gsym,
     unsigned int got_type,
     Output_data_reloc_generic* rel_dyn,
@@ -1498,16 +1521,16 @@ Output_data_got<size, big_endian>::add_global_pair_with_rel(
 
   if (r_type_2 != 0)
     rel_dyn->add_global_generic(gsym, r_type_2, this,
-				got_offset + size / 8, 0);
+				got_offset + got_size / 8, 0);
 }
 
 // Add an entry for a local symbol to the GOT.  This returns true if
 // this is a new GOT entry, false if the symbol already has a GOT
 // entry.
 
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 bool
-Output_data_got<size, big_endian>::add_local(
+Output_data_got<got_size, big_endian>::add_local(
     Relobj* object,
     unsigned int symndx,
     unsigned int got_type)
@@ -1523,9 +1546,9 @@ Output_data_got<size, big_endian>::add_local(
 
 // Like add_local, but use the PLT offset.
 
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 bool
-Output_data_got<size, big_endian>::add_local_plt(
+Output_data_got<got_size, big_endian>::add_local_plt(
     Relobj* object,
     unsigned int symndx,
     unsigned int got_type)
@@ -1542,9 +1565,9 @@ Output_data_got<size, big_endian>::add_local_plt(
 // Add an entry for a local symbol to the GOT, and add a dynamic
 // relocation of type R_TYPE for the GOT entry.
 
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 void
-Output_data_got<size, big_endian>::add_local_with_rel(
+Output_data_got<got_size, big_endian>::add_local_with_rel(
     Relobj* object,
     unsigned int symndx,
     unsigned int got_type,
@@ -1562,9 +1585,9 @@ Output_data_got<size, big_endian>::add_local_with_rel(
 // Add a pair of entries for a local symbol to the GOT, and add
 // dynamic relocations of type R_TYPE_1 and R_TYPE_2, respectively.
 // If R_TYPE_2 == 0, add the second entry with no relocation.
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 void
-Output_data_got<size, big_endian>::add_local_pair_with_rel(
+Output_data_got<got_size, big_endian>::add_local_pair_with_rel(
     Relobj* object,
     unsigned int symndx,
     unsigned int shndx,
@@ -1585,14 +1608,14 @@ Output_data_got<size, big_endian>::add_local_pair_with_rel(
 
   if (r_type_2 != 0)
     rel_dyn->add_output_section_generic(os, r_type_2, this,
-					got_offset + size / 8, 0);
+					got_offset + got_size / 8, 0);
 }
 
 // Reserve a slot in the GOT for a local symbol or the second slot of a pair.
 
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 void
-Output_data_got<size, big_endian>::reserve_local(
+Output_data_got<got_size, big_endian>::reserve_local(
     unsigned int i,
     Relobj* object,
     unsigned int sym_index,
@@ -1604,9 +1627,9 @@ Output_data_got<size, big_endian>::reserve_local(
 
 // Reserve a slot in the GOT for a global symbol.
 
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 void
-Output_data_got<size, big_endian>::reserve_global(
+Output_data_got<got_size, big_endian>::reserve_global(
     unsigned int i,
     Symbol* gsym,
     unsigned int got_type)
@@ -1617,11 +1640,11 @@ Output_data_got<size, big_endian>::reserve_global(
 
 // Write out the GOT.
 
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 void
-Output_data_got<size, big_endian>::do_write(Output_file* of)
+Output_data_got<got_size, big_endian>::do_write(Output_file* of)
 {
-  const int add = size / 8;
+  const int add = got_size / 8;
 
   const off_t off = this->offset();
   const off_t oview_size = this->data_size();
@@ -1646,9 +1669,9 @@ Output_data_got<size, big_endian>::do_write(Output_file* of)
 
 // Create a new GOT entry and return its offset.
 
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 unsigned int
-Output_data_got<size, big_endian>::add_got_entry(Got_entry got_entry)
+Output_data_got<got_size, big_endian>::add_got_entry(Got_entry got_entry)
 {
   if (!this->is_data_size_valid())
     {
@@ -1659,11 +1682,12 @@ Output_data_got<size, big_endian>::add_got_entry(Got_entry got_entry)
   else
     {
       // For an incremental update, find an available slot.
-      off_t got_offset = this->free_list_.allocate(size / 8, size / 8, 0);
+      off_t got_offset = this->free_list_.allocate(got_size / 8,
+						   got_size / 8, 0);
       if (got_offset == -1)
 	gold_fallback(_("out of patch space (GOT);"
 			" relink with --incremental-full"));
-      unsigned int got_index = got_offset / (size / 8);
+      unsigned int got_index = got_offset / (got_size / 8);
       gold_assert(got_index < this->entries_.size());
       this->entries_[got_index] = got_entry;
       return static_cast<unsigned int>(got_offset);
@@ -1672,10 +1696,11 @@ Output_data_got<size, big_endian>::add_got_entry(Got_entry got_entry)
 
 // Create a pair of new GOT entries and return the offset of the first.
 
-template<int size, bool big_endian>
+template<int got_size, bool big_endian>
 unsigned int
-Output_data_got<size, big_endian>::add_got_entry_pair(Got_entry got_entry_1,
-						      Got_entry got_entry_2)
+Output_data_got<got_size, big_endian>::add_got_entry_pair(
+    Got_entry got_entry_1,
+    Got_entry got_entry_2)
 {
   if (!this->is_data_size_valid())
     {
@@ -1689,11 +1714,12 @@ Output_data_got<size, big_endian>::add_got_entry_pair(Got_entry got_entry_1,
   else
     {
       // For an incremental update, find an available pair of slots.
-      off_t got_offset = this->free_list_.allocate(2 * size / 8, size / 8, 0);
+      off_t got_offset = this->free_list_.allocate(2 * got_size / 8,
+						   got_size / 8, 0);
       if (got_offset == -1)
 	gold_fallback(_("out of patch space (GOT);"
 			" relink with --incremental-full"));
-      unsigned int got_index = got_offset / (size / 8);
+      unsigned int got_index = got_offset / (got_size / 8);
       gold_assert(got_index < this->entries_.size());
       this->entries_[got_index] = got_entry_1;
       this->entries_[got_index + 1] = got_entry_2;
@@ -5432,24 +5458,16 @@ template
 class Output_data_group<64, true>;
 #endif
 
-#ifdef HAVE_TARGET_32_LITTLE
 template
 class Output_data_got<32, false>;
-#endif
 
-#ifdef HAVE_TARGET_32_BIG
 template
 class Output_data_got<32, true>;
-#endif
 
-#ifdef HAVE_TARGET_64_LITTLE
 template
 class Output_data_got<64, false>;
-#endif
 
-#ifdef HAVE_TARGET_64_BIG
 template
 class Output_data_got<64, true>;
-#endif
 
 } // End namespace gold.
