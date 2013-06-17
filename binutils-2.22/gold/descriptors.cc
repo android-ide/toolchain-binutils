@@ -253,6 +253,28 @@ Descriptors::close_some_descriptor()
   return false;
 }
 
+// Close all the descriptors open for reading.
+
+void
+Descriptors::close_all()
+{
+  Hold_optional_lock hl(this->lock_);
+
+  for (size_t i = 0; i < this->open_descriptors_.size(); i++)
+    {
+      Open_descriptor* pod = &this->open_descriptors_[i];
+      if (pod->name != NULL && !pod->inuse && !pod->is_write)
+	{
+	  if (::close(i) < 0)
+	    gold_warning(_("while closing %s: %s"), pod->name, strerror(errno));
+	  pod->name = NULL;
+	  pod->stack_next = -1;
+	  pod->is_on_stack = false;
+	}
+    }
+  this->stack_top_ = -1;
+}
+
 // The single global variable which manages descriptors.
 
 Descriptors descriptors;

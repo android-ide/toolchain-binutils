@@ -1,6 +1,6 @@
 // plugin.cc -- plugin manager for gold      -*- C++ -*-
 
-// Copyright 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+// Copyright 2008, 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
 // Written by Cary Coutant <ccoutant@google.com>.
 
 // This file is part of gold.
@@ -41,28 +41,22 @@
 
 #define RTLD_NOW 0      /* Dummy value.  */
 static void *
-dlopen (const char *file, int mode ATTRIBUTE_UNUSED)
+dlopen(const char *file, int mode ATTRIBUTE_UNUSED)
 {
-  return LoadLibrary (file);
+  return LoadLibrary(file);
 }
 
 static void *
-dlsym (void *handle, const char *name)
+dlsym(void *handle, const char *name)
 {
-  return reinterpret_cast<void *>(GetProcAddress (static_cast<HMODULE>(handle), name));
-}
-
-static int ATTRIBUTE_UNUSED
-dlclose (void *handle)
-{
-  FreeLibrary (static_cast<HMODULE>(handle));
-  return 0;
+  return reinterpret_cast<void *>(
+     GetProcAddress(static_cast<HMODULE>(handle),name));
 }
 
 static const char *
-dlerror (void)
+dlerror(void)
 {
-  return "Unable to load DLL.";
+  return "unable to load dll";
 }
 
 #endif /* !defined (HAVE_DLFCN_H) && defined (HAVE_WINDOWS_H)  */
@@ -77,6 +71,7 @@ dlerror (void)
 #include "target.h"
 #include "readsyms.h"
 #include "symtab.h"
+#include "descriptors.h"
 #include "elfcpp.h"
 
 namespace gold
@@ -685,6 +680,14 @@ Plugin_manager::layout_deferred_objects()
 void
 Plugin_manager::cleanup()
 {
+  if (this->any_added_)
+    {
+      // If any input files were added, close all the input files.
+      // This is because the plugin may want to remove them, and on
+      // Windows you are not allowed to remove an open file.
+      close_all_descriptors();
+    }
+
   for (this->current_ = this->plugins_.begin();
        this->current_ != this->plugins_.end();
        ++this->current_)

@@ -196,10 +196,6 @@
 /* Default library search path */
 #undef LIB_PATH
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
-#undef LT_OBJDIR
-
 /* Whether configured as a native linker */
 #undef NATIVE_LINKER
 
