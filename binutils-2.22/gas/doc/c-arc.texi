@@ -220,9 +220,9 @@ The extension instructions are not macros.  The assembler creates
 encodings for use of these instructions according to the specification
 by the user.  The parameters are:
 
-@table @bullet
+@itemize @bullet
 @item @var{name}
-Name of the extension instruction 
+Name of the extension instruction
 
 @item @var{opcode}
 Opcode to be used. (Bits 27:31 in the encoding).  Valid values
@@ -278,8 +278,8 @@ is, the result is discarded).  This is the same as though the source
 code were: inst 0,r1,r2.  You use OP1_IMM_IMPLIED by bitwise ORing it
 with SYNTAX_20P.
 
-@end itemize 
-@end table
+@end itemize
+@end itemize
 
 For example, defining 64-bit multiplier with immediate operands:
 
