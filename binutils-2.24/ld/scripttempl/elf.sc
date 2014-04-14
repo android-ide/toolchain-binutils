@@ -122,9 +122,12 @@ DATA_SEGMENT_ALIGN="ALIGN(${SEGMENT_SIZE}) + (. & (${MAXPAGESIZE} - 1))"
 DATA_SEGMENT_RELRO_END=""
 DATA_SEGMENT_END=""
 if test -n "${COMMONPAGESIZE}"; then
-  #DATA_SEGMENT_ALIGN="ALIGN (${SEGMENT_SIZE}) - ((${MAXPAGESIZE} - .) & (${MAXPAGESIZE} - 1)); . = DATA_SEGMENT_ALIGN (${MAXPAGESIZE}, ${COMMONPAGESIZE})"
-  # For Android, we align at exactly a page boundary.
-  DATA_SEGMENT_ALIGN="ALIGN (${SEGMENT_SIZE}); . = DATA_SEGMENT_ALIGN (${MAXPAGESIZE}, ${COMMONPAGESIZE})"
+  if [ "$ELFSIZE" = "64" ]; then
+       DATA_SEGMENT_ALIGN="ALIGN (${SEGMENT_SIZE}) - ((${MAXPAGESIZE} - .) & (${MAXPAGESIZE} - 1)); . = DATA_SEGMENT_ALIGN (${MAXPAGESIZE}, ${COMMONPAGESIZE})"
+   else
+       # For 32, we align at exactly a page boundary.
+       DATA_SEGMENT_ALIGN="ALIGN (${SEGMENT_SIZE}); . = DATA_SEGMENT_ALIGN (${MAXPAGESIZE}, ${COMMONPAGESIZE})"
+   fi
   DATA_SEGMENT_END=". = DATA_SEGMENT_END (.);"
   DATA_SEGMENT_RELRO_END=". = DATA_SEGMENT_RELRO_END (${SEPARATE_GOTPLT-0}, .);"
 fi
@@ -534,8 +537,8 @@ cat <<EOF
   .exception_ranges*) }
   ${TEXT_PLT+${PLT_NEXT_DATA+${PLT}}}
 
-  /* Adjust the address for the data segment.  We want to align at exactly
-     a page boundary to make life easier for apriori. */
+  /* Adjust the address for the data segment.  For 32 bits we want to align
+  at exactly a page boundary to make life easier for apriori. */
   ${CREATE_SHLIB-${CREATE_PIE-${RELOCATING+. = ${DATA_ADDR-${DATA_SEGMENT_ALIGN}};}}}
   ${CREATE_SHLIB+${RELOCATING+. = ${SHLIB_DATA_ADDR-${DATA_SEGMENT_ALIGN}};}}
   ${CREATE_PIE+${RELOCATING+. = ${SHLIB_DATA_ADDR-${DATA_SEGMENT_ALIGN}};}}
