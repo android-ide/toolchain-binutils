@@ -240,8 +240,8 @@ test "${LARGE_SECTIONS}" = "yes" && LARGE_SECTIONS="
 if test "${ENABLE_INITFINI_ARRAY}" = "yes"; then
   SORT_INIT_ARRAY="KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))"
   SORT_FINI_ARRAY="KEEP (*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))"
-  CTORS_IN_INIT_ARRAY="EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o $OTHER_EXCLUDE_FILES) .ctors"
-  DTORS_IN_FINI_ARRAY="EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o $OTHER_EXCLUDE_FILES) .dtors"
+  CTORS_IN_INIT_ARRAY="EXCLUDE_FILE (*crtbegin.o *crtbegin*.o *crtend.o *crtend*.o $OTHER_EXCLUDE_FILES) .ctors"
+  DTORS_IN_FINI_ARRAY="EXCLUDE_FILE (*crtbegin.o *crtbegin*.o *crtend.o *crtend*.o $OTHER_EXCLUDE_FILES) .dtors"
 else
   SORT_INIT_ARRAY="KEEP (*(SORT(.init_array.*)))"
   SORT_FINI_ARRAY="KEEP (*(SORT(.fini_array.*)))"
