@@ -328,6 +328,8 @@ Options:\n\
                           prefer smaller memory use at the cost of longer\n\
                           assembly times\n"));
   fprintf (stream, _("\
+  --save-temps            ignored\n"));
+  fprintf (stream, _("\
   --statistics            print various measured statistics from execution\n"));
   fprintf (stream, _("\
   --strip-local-absolute  strip local absolute symbols\n"));
@@ -454,6 +456,7 @@ parse_args (int * pargc, char *** pargv)
       OPTION_HASH_TABLE_SIZE,
       OPTION_REDUCE_MEMORY_OVERHEADS,
       OPTION_WARN_FATAL,
+      OPTION_SAVE_TEMPS,
       OPTION_COMPRESS_DEBUG,
       OPTION_NOCOMPRESS_DEBUG
     /* When you add options here, check that they do
@@ -518,6 +521,7 @@ parse_args (int * pargc, char *** pargv)
     ,{"nocpp", no_argument, NULL, OPTION_NOCPP}
     ,{"no-warn", no_argument, NULL, 'W'}
     ,{"reduce-memory-overheads", no_argument, NULL, OPTION_REDUCE_MEMORY_OVERHEADS}
+    ,{"save-temps", no_argument, NULL, OPTION_SAVE_TEMPS}
     ,{"statistics", no_argument, NULL, OPTION_STATISTICS}
     ,{"strip-local-absolute", no_argument, NULL, OPTION_STRIP_LOCAL_ABSOLUTE}
     ,{"version", no_argument, NULL, OPTION_VERSION}
@@ -609,6 +613,9 @@ parse_args (int * pargc, char *** pargv)
 	  exit (EXIT_SUCCESS);
 
 	case OPTION_NOCPP:
+	  break;
+
+	case OPTION_SAVE_TEMPS:
 	  break;
 
 	case OPTION_STATISTICS:
