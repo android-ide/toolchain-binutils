@@ -106,6 +106,12 @@ test_mxu:
 .endm
 	mfc1	$2, $2
 	mfc1	$2, $f1
+	mtc1	$2, $2
+	mtc1	$2, $f1
+	mfhc1	$2, $2
+	mfhc1	$2, $f2
+	mthc1	$2, $2
+	mthc1	$2, $f2
 	test1	d16mac
 	test1	d16macf
 	test1	d16madl

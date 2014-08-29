@@ -1444,6 +1444,8 @@ const struct mips_opcode mips_builtin_opcodes[] =
 {"mfc1",		"t,G",		0x44000002, 0xffe007ff,	WR_1|RD_2|LCD|FP_S|F32M,0,		0,		MXU,	0 },
 {"mfc1",		"t,S",		0x44000000, 0xffe007ff,	WR_1|RD_2|LCD|FP_S|F32M,0,		I1,		0,	0 },
 {"mfc1",		"t,G",		0x44000000, 0xffe007ff,	WR_1|RD_2|LCD|FP_S|F32M,0,		I1,		0,	0 },
+{"mfhc1",		"t,S",		0x44600002, 0xffe007ff,	WR_1|RD_2|LCD|FP_D,	0,		0,		MXU,	0 },
+{"mfhc1",		"t,G",		0x44600002, 0xffe007ff,	WR_1|RD_2|LCD|FP_D,	0,		0,		MXU,	0 },
 {"mfhc1",		"t,S",		0x44600000, 0xffe007ff,	WR_1|RD_2|LCD|FP_D,	0,		I33,		0,	0 },
 {"mfhc1",		"t,G",		0x44600000, 0xffe007ff,	WR_1|RD_2|LCD|FP_D,	0,		I33,		0,	0 },
 /* mfc2 is at the bottom of the table.  */
@@ -1540,8 +1542,12 @@ const struct mips_opcode mips_builtin_opcodes[] =
 {"mthc0",		"t,G,H",	0x40c00000, 0xffe007f8,	RD_1|WR_C0|WR_CC|COD,	0,		I33,		XPA,	0 },
 {"mthgc0",		"t,G",		0x40600600, 0xffe007ff,	RD_1|WR_C0|WR_CC|COD,	0,		I33,		IVIRT|XPA,	0 },
 {"mthgc0",		"t,G,H",	0x40600600, 0xffe007f8,	RD_1|WR_C0|WR_CC|COD,	0,		I33,		IVIRT|XPA,	0 },
+{"mtc1",		"t,S",		0x44800002, 0xffe007ff,	RD_1|WR_2|COD|FP_S|F32M,0,		0,		MXU,	0 },
+{"mtc1",		"t,G",		0x44800002, 0xffe007ff,	RD_1|WR_2|COD|FP_S|F32M,0,		0,		MXU,	0 },
 {"mtc1",		"t,S",		0x44800000, 0xffe007ff,	RD_1|WR_2|COD|FP_S|F32M,0,		I1,		0,	0 },
 {"mtc1",		"t,G",		0x44800000, 0xffe007ff,	RD_1|WR_2|COD|FP_S|F32M,0,		I1,		0,	0 },
+{"mthc1",		"t,S",		0x44e00002, 0xffe007ff,	RD_1|WR_2|COD|FP_D,	0,		0,		MXU,	0 },
+{"mthc1",		"t,G",		0x44e00002, 0xffe007ff,	RD_1|WR_2|COD|FP_D,	0,		0,		MXU,	0 },
 {"mthc1",		"t,S",		0x44e00000, 0xffe007ff,	RD_1|WR_2|COD|FP_D,	0,		I33,		0,	0 },
 {"mthc1",		"t,G",		0x44e00000, 0xffe007ff,	RD_1|WR_2|COD|FP_D,	0,		I33,		0,	0 },
 /* mtc2 is at the bottom of the table.  */
