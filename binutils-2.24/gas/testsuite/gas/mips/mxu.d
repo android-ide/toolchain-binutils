@@ -8,6 +8,12 @@
 Disassembly of section \.text:
 [0-9a-f]+ <[^>]*> 44021002 	mfc1	v0,\$f2
 [0-9a-f]+ <[^>]*> 44020802 	mfc1	v0,\$f1
+[0-9a-f]+ <[^>]*> 44821002 	mtc1	v0,\$f2
+[0-9a-f]+ <[^>]*> 44820802 	mtc1	v0,\$f1
+[0-9a-f]+ <[^>]*> 44621002 	mfhc1	v0,\$f2
+[0-9a-f]+ <[^>]*> 44621002 	mfhc1	v0,\$f2
+[0-9a-f]+ <[^>]*> 44e21002 	mthc1	v0,\$f2
+[0-9a-f]+ <[^>]*> 44e21002 	mthc1	v0,\$f2
 [0-9a-f]+ <[^>]*> 7010c84a 	d16mac	xr1,xr2,xr3,xr4,AA,WW
 [0-9a-f]+ <[^>]*> 7050c84a 	d16mac	xr1,xr2,xr3,xr4,AA,LW
 [0-9a-f]+ <[^>]*> 7090c84a 	d16mac	xr1,xr2,xr3,xr4,AA,HW
