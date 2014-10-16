@@ -2,6 +2,12 @@
 
 	* config.sub, config.guess: Import from upstream.
 
+2014-03-12  Nick Clifton  <nickc@redhat.com>
+
+	PR ld/16671
+	* elf32-arm.c (elf32_arm_add_symbol_hook): Check for ARM format
+	before testing for vxworks.
+
 2013-11-23  Alan Modra  <amodra@gmail.com>
 
 	* config.sub, config.guess: Import from upstream.
