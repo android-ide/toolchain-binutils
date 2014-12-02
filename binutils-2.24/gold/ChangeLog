@@ -1,3 +1,11 @@
+2014-12-01  Cary Coutant  <ccoutant@google.com>
+
+	PR gold/17578
+	* layout.cc (Layout::layout_gnu_stack): Don't warn when -z execstack
+	is given.
+	(Layout::create_executable_stack_info): Warn when -z noexecstack is
+	given but some inputs require executable stack.
+
 2013-11-22  Cary Coutant  <ccoutant@google.com>
 
 	* testsuite/Makefile.am (exception_x86_64_bnd_test): Use in-tree
