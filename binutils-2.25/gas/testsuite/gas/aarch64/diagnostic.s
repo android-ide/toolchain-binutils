@@ -89,3 +89,24 @@
 	movi	v1.8b, 97, lsl #8
 	msr	dummy, x1
 	fmov	s0, 0x42000000
+	ldp	x0, x1, [x2, #4]
+	ldp	x0, x1, [x2, #4]!
+	ldp	x0, x1, [x2], #4
+	stp	w0, w1, [x2, #3]
+	stp	w0, w1, [x2, #2]!
+	stp	w0, w1, [x2], #1
+	cinc	w0, w1, al
+	cinc	w0, w1, nv
+	cset	w0, al
+	cset	w0, nv
+
+	# test diagnostic info on optional operand
+	ret	lr
+	ret	kk
+	clrex	x0
+	clrex	w0
+	clrex	kk
+	sys	#0, c0, c0, #0, kk
+	sys	#0, c0, c0, #0,
+
+	casp w0,w1,w2,w3,[x4]

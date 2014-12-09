@@ -1,6 +1,6 @@
 #!/bin/sh
 # genscripts.sh - generate the ld-emulation-target specific files
-# Copyright 2004, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+# Copyright (C) 2004-2014 Free Software Foundation, Inc.
 #
 # This file is part of the Gnu Linker.
 #
@@ -33,8 +33,7 @@
 #          enable_initfini_array \
 #          this_emulation \
 # optional:
-#          tool_dir \
-#          customizer_script
+#          tool_dir
 #
 # Sample usage:
 #
@@ -93,14 +92,9 @@ use_sysroot=$1
 ENABLE_INITFINI_ARRAY=$2
 EMULATION_NAME=$3
 TOOL_LIB=$4
-CUSTOMIZER_SCRIPT=$5
-
-if [ "x${CUSTOMIZER_SCRIPT}" = "x" ] ; then
-  CUSTOMIZER_SCRIPT=${EMULATION_NAME}
-fi
-CUSTOMIZER_SCRIPT="${srcdir}/emulparams/${CUSTOMIZER_SCRIPT}.sh"
 
 # Include the emulation-specific parameters:
+CUSTOMIZER_SCRIPT="${srcdir}/emulparams/${EMULATION_NAME}.sh"
 . ${CUSTOMIZER_SCRIPT}
 
 if test -d ldscripts; then
@@ -160,6 +154,7 @@ append_to_lib_path()
       if [ "x${use_sysroot}" = "xyes" ] ; then
 	lib="=${lib}"
       fi
+      skip_lib=no
       if test -n "${LIBPATH_SUFFIX}"; then
 	case "${lib}" in
 	  *${LIBPATH_SUFFIX})
@@ -169,18 +164,27 @@ append_to_lib_path()
 	      *) lib_path1=${lib_path1}:${lib} ;;
 	    esac ;;
 	  *)
-	    case :${lib_path1}: in
-	      *:${lib}${LIBPATH_SUFFIX}:*) ;;
-	      ::) lib_path1=${lib}${LIBPATH_SUFFIX} ;;
-	      *) lib_path1=${lib_path1}:${lib}${LIBPATH_SUFFIX} ;;
-	    esac ;;
+	    if test -n "${LIBPATH_SUFFIX_SKIP}"; then
+	      case "${lib}" in
+		*${LIBPATH_SUFFIX_SKIP}) skip_lib=yes ;;
+	      esac
+	    fi
+	    if test "${skip_lib}" = "no"; then
+	      case :${lib_path1}: in
+		*:${lib}${LIBPATH_SUFFIX}:*) ;;
+		::) lib_path1=${lib}${LIBPATH_SUFFIX} ;;
+	        *) lib_path1=${lib_path1}:${lib}${LIBPATH_SUFFIX} ;;
+	      esac
+	    fi ;;
 	esac
       fi
-      case :${lib_path1}:${lib_path2}: in
-	*:${lib}:*) ;;
-	*::) lib_path2=${lib} ;;
-	*) lib_path2=${lib_path2}:${lib} ;;
-      esac
+      if test "${skip_lib}" = "no"; then
+	case :${lib_path1}:${lib_path2}: in
+	  *:${lib}:*) ;;
+	  *::) lib_path2=${lib} ;;
+	  *) lib_path2=${lib_path2}:${lib} ;;
+	esac
+      fi
     done
   fi
 }
@@ -224,8 +228,7 @@ case :${lib_path1}:${lib_path2}: in
   *) LIB_PATH=${lib_path1}:${lib_path2} ;;
 esac
 
-# For Android, comment out LIB_SEARCH_DIRS.
-#LIB_SEARCH_DIRS=`echo ${LIB_PATH} | sed -e 's/:/ /g' -e 's/\([^ ][^ ]*\)/SEARCH_DIR(\\"\1\\");/g'`
+LIB_SEARCH_DIRS=`echo ${LIB_PATH} | sed -e 's/:/ /g' -e 's/\([^ ][^ ]*\)/SEARCH_DIR(\\"\1\\");/g'`
 
 # We need it for testsuite.
 set $EMULATION_LIBPATH
@@ -291,7 +294,6 @@ LD_FLAG=
 DATA_ALIGNMENT=${DATA_ALIGNMENT_}
 RELOCATING=" "
 ( echo "/* Default linker script, for normal executables */"
-  echo "/* Modified for Android.  */"
   . ${CUSTOMIZER_SCRIPT}
   . ${srcdir}/scripttempl/${SCRIPT_NAME}.sc
 ) | sed -e '/^ *$/d;s/[ 	]*$//' > ldscripts/${EMULATION_NAME}.x
@@ -345,7 +347,6 @@ if test -n "$GENERATE_SHLIB_SCRIPT"; then
     DATA_ALIGNMENT=${DATA_ALIGNMENT_sc-${DATA_ALIGNMENT}}
     COMBRELOC=ldscripts/${EMULATION_NAME}.xsc.tmp
     ( echo "/* Script for --shared -z combreloc: shared library, combine & sort relocs */"
-      echo "/* Modified for Android.  */"
       . ${CUSTOMIZER_SCRIPT}
       . ${srcdir}/scripttempl/${SCRIPT_NAME}.sc
     ) | sed -e '/^ *$/d;s/[ 	]*$//' > ldscripts/${EMULATION_NAME}.xsc
@@ -406,8 +407,8 @@ if test -n "$GENERATE_AUTO_IMPORT_SCRIPT"; then
   ) | sed -e '/^ *$/d;s/[ 	]*$//' > ldscripts/${EMULATION_NAME}.xa
 fi
 
-case " $EMULATION_LIBPATH " in
-    *" ${EMULATION_NAME} "*) COMPILE_IN=true;;
+case "$COMPILE_IN: $EMULATION_LIBPATH " in
+    :*" ${EMULATION_NAME} "*) COMPILE_IN=yes;;
 esac
 
 # PR ld/5652:

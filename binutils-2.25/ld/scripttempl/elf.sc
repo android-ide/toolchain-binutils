@@ -1,3 +1,8 @@
+# Copyright (C) 2014 Free Software Foundation, Inc.
+# 
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.
 #
 # Unusual variables checked by this code:
 #	NOP - four byte opcode for no-op (defaults to none)
@@ -122,12 +127,7 @@ DATA_SEGMENT_ALIGN="ALIGN(${SEGMENT_SIZE}) + (. & (${MAXPAGESIZE} - 1))"
 DATA_SEGMENT_RELRO_END=""
 DATA_SEGMENT_END=""
 if test -n "${COMMONPAGESIZE}"; then
-  if [ "$ELFSIZE" = "64" ]; then
-       DATA_SEGMENT_ALIGN="ALIGN (${SEGMENT_SIZE}) - ((${MAXPAGESIZE} - .) & (${MAXPAGESIZE} - 1)); . = DATA_SEGMENT_ALIGN (${MAXPAGESIZE}, ${COMMONPAGESIZE})"
-   else
-       # For 32, we align at exactly a page boundary.
-       DATA_SEGMENT_ALIGN="ALIGN (${SEGMENT_SIZE}); . = DATA_SEGMENT_ALIGN (${MAXPAGESIZE}, ${COMMONPAGESIZE})"
-   fi
+  DATA_SEGMENT_ALIGN="ALIGN (${SEGMENT_SIZE}) - ((${MAXPAGESIZE} - .) & (${MAXPAGESIZE} - 1)); . = DATA_SEGMENT_ALIGN (${MAXPAGESIZE}, ${COMMONPAGESIZE})"
   DATA_SEGMENT_END=". = DATA_SEGMENT_END (.);"
   DATA_SEGMENT_RELRO_END=". = DATA_SEGMENT_RELRO_END (${SEPARATE_GOTPLT-0}, .);"
 fi
@@ -165,7 +165,7 @@ RELA_IPLT=".rela.iplt    ${RELOCATING-0} :
 DYNAMIC=".dynamic      ${RELOCATING-0} : { *(.dynamic) }"
 RODATA=".${RODATA_NAME}       ${RELOCATING-0} : { *(.${RODATA_NAME}${RELOCATING+ .${RODATA_NAME}.* .gnu.linkonce.r.*}) }"
 DATARELRO=".data.rel.ro : { *(.data.rel.ro.local* .gnu.linkonce.d.rel.ro.local.*) *(.data.rel.ro .data.rel.ro.* .gnu.linkonce.d.rel.ro.*) }"
-DISCARDED="/DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.gnu.lto_*) *(.mdebug.*) }"
+DISCARDED="/DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.gnu.lto_*) }"
 if test -z "${NO_SMALL_DATA}"; then
   SBSS=".${SBSS_NAME}         ${RELOCATING-0} :
   {
@@ -240,8 +240,8 @@ test "${LARGE_SECTIONS}" = "yes" && LARGE_SECTIONS="
 if test "${ENABLE_INITFINI_ARRAY}" = "yes"; then
   SORT_INIT_ARRAY="KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))"
   SORT_FINI_ARRAY="KEEP (*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))"
-  CTORS_IN_INIT_ARRAY="EXCLUDE_FILE (*crtbegin.o *crtbegin*.o *crtend.o *crtend*.o $OTHER_EXCLUDE_FILES) .ctors"
-  DTORS_IN_FINI_ARRAY="EXCLUDE_FILE (*crtbegin.o *crtbegin*.o *crtend.o *crtend*.o $OTHER_EXCLUDE_FILES) .dtors"
+  CTORS_IN_INIT_ARRAY="EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o $OTHER_EXCLUDE_FILES) .ctors"
+  DTORS_IN_FINI_ARRAY="EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o $OTHER_EXCLUDE_FILES) .dtors"
 else
   SORT_INIT_ARRAY="KEEP (*(SORT(.init_array.*)))"
   SORT_FINI_ARRAY="KEEP (*(SORT(.fini_array.*)))"
@@ -250,15 +250,17 @@ else
 fi
 INIT_ARRAY=".init_array   ${RELOCATING-0} :
   {
-    KEEP (*crtbegin*.o(.init_array))
+    ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__init_array_start = .);}}
     ${SORT_INIT_ARRAY}
     KEEP (*(.init_array ${CTORS_IN_INIT_ARRAY}))
+    ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__init_array_end = .);}}
   }"
 FINI_ARRAY=".fini_array   ${RELOCATING-0} :
   {
-    KEEP (*crtbegin*.o(.fini_array))
+    ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__fini_array_start = .);}}
     ${SORT_FINI_ARRAY}
     KEEP (*(.fini_array ${DTORS_IN_FINI_ARRAY}))
+    ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__fini_array_end = .);}}
   }"
 CTOR=".ctors        ${CONSTRUCTING-0} :
   {
@@ -274,14 +276,14 @@ CTOR=".ctors        ${CONSTRUCTING-0} :
        is in.  */
 
     KEEP (*crtbegin.o(.ctors))
-    KEEP (*crtbegin*.o(.ctors))
+    KEEP (*crtbegin?.o(.ctors))
 
     /* We don't want to include the .ctor section from
        the crtend.o file until after the sorted ctors.
        The .ctor section from the crtend file contains the
        end of ctors marker and it must be last */
 
-    KEEP (*(EXCLUDE_FILE (*crtend.o *crtend*.o $OTHER_EXCLUDE_FILES) .ctors))
+    KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o $OTHER_EXCLUDE_FILES) .ctors))
     KEEP (*(SORT(.ctors.*)))
     KEEP (*(.ctors))
     ${CONSTRUCTING+${CTOR_END}}
@@ -290,8 +292,8 @@ DTOR=".dtors        ${CONSTRUCTING-0} :
   {
     ${CONSTRUCTING+${DTOR_START}}
     KEEP (*crtbegin.o(.dtors))
-    KEEP (*crtbegin*.o(.dtors))
-    KEEP (*(EXCLUDE_FILE (*crtend.o *crtend*.o $OTHER_EXCLUDE_FILES) .dtors))
+    KEEP (*crtbegin?.o(.dtors))
+    KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o $OTHER_EXCLUDE_FILES) .dtors))
     KEEP (*(SORT(.dtors.*)))
     KEEP (*(.dtors))
     ${CONSTRUCTING+${DTOR_END}}
@@ -302,11 +304,8 @@ STACK="  .stack        ${RELOCATING-0}${RELOCATING+${STACK_ADDR}} :
     *(.stack)
   }"
 
-# For Android, remove SEGMENT_START.
-#TEXT_START_ADDR="SEGMENT_START(\"text-segment\", ${TEXT_START_ADDR})"
-#SHLIB_TEXT_START_ADDR="SEGMENT_START(\"text-segment\", ${SHLIB_TEXT_START_ADDR:-0})"
-TEXT_START_ADDR="${TEXT_START_ADDR}"
-SHLIB_TEXT_START_ADDR="0"
+TEXT_START_ADDR="SEGMENT_START(\"text-segment\", ${TEXT_START_ADDR})"
+SHLIB_TEXT_START_ADDR="SEGMENT_START(\"text-segment\", ${SHLIB_TEXT_START_ADDR:-0})"
 
 if [ -z "$SEPARATE_CODE" ]; then
   SIZEOF_HEADERS_CODE=" + SIZEOF_HEADERS"
@@ -314,7 +313,7 @@ else
   SIZEOF_HEADERS_CODE=
 fi
 
-# if this is for an embedded system, don't add SIZEOF_HEADERS.
+# If this is for an embedded system, don't add SIZEOF_HEADERS.
 if [ -z "$EMBEDDED" ]; then
    test -z "${TEXT_BASE_ADDRESS}" && TEXT_BASE_ADDRESS="${TEXT_START_ADDR}${SIZEOF_HEADERS_CODE}"
 else
@@ -322,6 +321,12 @@ else
 fi
 
 cat <<EOF
+/* Copyright (C) 2014 Free Software Foundation, Inc.
+
+   Copying and distribution of this script, with or without modification,
+   are permitted in any medium without royalty provided the copyright
+   notice and this notice are preserved.  */
+
 OUTPUT_FORMAT("${OUTPUT_FORMAT}", "${BIG_OUTPUT_FORMAT}",
 	      "${LITTLE_OUTPUT_FORMAT}")
 OUTPUT_ARCH(${OUTPUT_ARCH})
@@ -416,13 +421,13 @@ cat >> ldscripts/dyntmp.$$ <<EOF
   .rel.dyn      ${RELOCATING-0} :
     {
 EOF
-sed -e '/^[ 	]*[{}][ 	]*$/d;/:[ 	]*$/d;/\.rela\./d;s/^.*: { *\(.*\)}$/      \1/' $COMBRELOC >> ldscripts/dyntmp.$$
+sed -e '/^[ 	]*[{}][ 	]*$/d;/:[ 	]*$/d;/\.rela\./d;/__rela_iplt_/d;s/^.*: { *\(.*\)}$/      \1/' $COMBRELOC >> ldscripts/dyntmp.$$
 cat >> ldscripts/dyntmp.$$ <<EOF
     }
   .rela.dyn     ${RELOCATING-0} :
     {
 EOF
-sed -e '/^[ 	]*[{}][ 	]*$/d;/:[ 	]*$/d;/\.rel\./d;s/^.*: { *\(.*\)}/      \1/' $COMBRELOC >> ldscripts/dyntmp.$$
+sed -e '/^[ 	]*[{}][ 	]*$/d;/:[ 	]*$/d;/\.rel\./d;/__rel_iplt_/d;s/^.*: { *\(.*\)}/      \1/' $COMBRELOC >> ldscripts/dyntmp.$$
 cat >> ldscripts/dyntmp.$$ <<EOF
     }
 EOF
@@ -452,10 +457,10 @@ emit_dyn()
     cat ldscripts/dyntmp.$$
   else
     if test -z "${NO_REL_RELOCS}"; then
-      sed -e '/^[ 	]*\.rela\.[^}]*$/,/}/d' -e '/^[ 	]*\.rela\./d' ldscripts/dyntmp.$$
+      sed -e '/^[ 	]*\.rela\.[^}]*$/,/}/d;/^[ 	]*\.rela\./d;/__rela_iplt_/d' ldscripts/dyntmp.$$
     fi
     if test -z "${NO_RELA_RELOCS}"; then
-      sed -e '/^[ 	]*\.rel\.[^}]*$/,/}/d' -e '/^[ 	]*\.rel\./d' ldscripts/dyntmp.$$
+      sed -e '/^[ 	]*\.rel\.[^}]*$/,/}/d;/^[ 	]*\.rel\./d;/__rel_iplt_/d' ldscripts/dyntmp.$$
     fi
   fi
   rm -f ldscripts/dyntmp.$$
@@ -537,8 +542,8 @@ cat <<EOF
   .exception_ranges*) }
   ${TEXT_PLT+${PLT_NEXT_DATA+${PLT}}}
 
-  /* Adjust the address for the data segment.  For 32 bits we want to align
-  at exactly a page boundary to make life easier for apriori. */
+  /* Adjust the address for the data segment.  We want to adjust up to
+     the same address within the page on the next page up.  */
   ${CREATE_SHLIB-${CREATE_PIE-${RELOCATING+. = ${DATA_ADDR-${DATA_SEGMENT_ALIGN}};}}}
   ${CREATE_SHLIB+${RELOCATING+. = ${SHLIB_DATA_ADDR-${DATA_SEGMENT_ALIGN}};}}
   ${CREATE_PIE+${RELOCATING+. = ${SHLIB_DATA_ADDR-${DATA_SEGMENT_ALIGN}};}}
@@ -552,23 +557,14 @@ cat <<EOF
   .tdata	${RELOCATING-0} : { *(.tdata${RELOCATING+ .tdata.* .gnu.linkonce.td.*}) }
   .tbss		${RELOCATING-0} : { *(.tbss${RELOCATING+ .tbss.* .gnu.linkonce.tb.*})${RELOCATING+ *(.tcommon)} }
 
-  /* Ensure the __preinit_array_start label is properly aligned.  We
-     could instead move the label definition inside the section, but
-     the linker would then create the section even if it turns out to
-     be empty, which isn't pretty.  */
-  ${RELOCATING+. = ALIGN(${ALIGNMENT});}
-  ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__preinit_array_start = .);}}
   .preinit_array   ${RELOCATING-0} :
   {
+    ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__preinit_array_start = .);}}
     KEEP (*(.preinit_array))
+    ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__preinit_array_end = .);}}
   }
-  ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__preinit_array_end = .);}}
-  ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__init_array_start = .);}}
   ${RELOCATING+${INIT_ARRAY}}
-  ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__init_array_end = .);}}
-  ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__fini_array_start = .);}}
   ${RELOCATING+${FINI_ARRAY}}
-  ${RELOCATING+${CREATE_SHLIB-PROVIDE_HIDDEN (${USER_LABEL_PREFIX}__fini_array_end = .);}}
   ${SMALL_DATA_CTOR-${RELOCATING+${CTOR}}}
   ${SMALL_DATA_DTOR-${RELOCATING+${DTOR}}}
   .jcr          ${RELOCATING-0} : { KEEP (*(.jcr)) }
@@ -616,8 +612,10 @@ cat <<EOF
    *(COMMON)
    /* Align here to ensure that the .bss section occupies space up to
       _end.  Align after .bss to ensure correct alignment even if the
-      .bss section disappears because there are no input sections.  */
-   ${RELOCATING+. = ALIGN(${ALIGNMENT});}
+      .bss section disappears because there are no input sections.
+      FIXME: Why do we need it? When there is no .bss section, we don't
+      pad the .data section.  */
+   ${RELOCATING+. = ALIGN(. != 0 ? ${ALIGNMENT} : 1);}
   }
   ${OTHER_BSS_SECTIONS}
   ${LARGE_BSS_AFTER_BSS+${LARGE_BSS}}
@@ -636,9 +634,7 @@ SHLIB_LARGE_DATA_ADDR=". = SEGMENT_START(\"ldata-segment\", ${SHLIB_LARGE_DATA_A
   ${LARGE_BSS_AFTER_BSS-${LARGE_BSS}}
   ${RELOCATING+. = ALIGN(${ALIGNMENT});}
   ${RELOCATING+${OTHER_END_SYMBOLS}}
-  ${RELOCATING+${END_SYMBOLS-${USER_LABEL_PREFIX}_end = .;
-  _bss_end__ = . ; __bss_end__ = . ; __end__ = . ;
-  PROVIDE (${USER_LABEL_PREFIX}end = .);}}
+  ${RELOCATING+${END_SYMBOLS-${USER_LABEL_PREFIX}_end = .; PROVIDE (${USER_LABEL_PREFIX}end = .);}}
   ${RELOCATING+${DATA_SEGMENT_END}}
 EOF
 

@@ -1,5 +1,5 @@
 /* Renesas RL78 specific support for 32-bit ELF.
-   Copyright (C) 2011-2013 Free Software Foundation, Inc.
+   Copyright (C) 2011-2014 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -460,12 +460,13 @@ rl78_elf_relocate_section
 	}
       else
 	{
-	  bfd_boolean warned;
+	  bfd_boolean warned ATTRIBUTE_UNUSED;
+	  bfd_boolean ignored ATTRIBUTE_UNUSED;
 
 	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
 				   r_symndx, symtab_hdr, sym_hashes, h,
 				   sec, relocation, unresolved_reloc,
-				   warned);
+				   warned, ignored);
 
 	  name = h->root.root.string;
 	}
@@ -1048,6 +1049,19 @@ rl78_elf_merge_private_bfd_data (bfd * ibfd, bfd * obfd)
 	    (*_bfd_error_handler) (_("- %s is G10, %s is not"),
 				   bfd_get_filename (ibfd), bfd_get_filename (obfd));
 	}
+
+      if (changed_flags & E_FLAG_RL78_64BIT_DOUBLES)
+	{
+	  (*_bfd_error_handler)
+	    (_("RL78 merge conflict: cannot link 32-bit and 64-bit objects together"));
+
+	  if (old_flags & E_FLAG_RL78_64BIT_DOUBLES)
+	    (*_bfd_error_handler) (_("- %s is 64-bit, %s is not"),
+				   bfd_get_filename (obfd), bfd_get_filename (ibfd));
+	  else
+	    (*_bfd_error_handler) (_("- %s is 64-bit, %s is not"),
+				   bfd_get_filename (ibfd), bfd_get_filename (obfd));
+	}    
     }
 
   return !error;
@@ -1069,6 +1083,9 @@ rl78_elf_print_private_bfd_data (bfd * abfd, void * ptr)
 
   if (flags & E_FLAG_RL78_G10)
     fprintf (file, _(" [G10]"));
+
+  if (flags & E_FLAG_RL78_64BIT_DOUBLES)
+    fprintf (file, _(" [64-bit doubles]"));
 
   fputc ('\n', file);
   return TRUE;
@@ -1353,7 +1370,7 @@ rl78_elf_relax_plt_section (bfd *dynobj,
 
   /* Likewise for local symbols, though that's somewhat less convenient
      as we have to walk the list of input bfds and swap in symbol data.  */
-  for (ibfd = info->input_bfds; ibfd ; ibfd = ibfd->link_next)
+  for (ibfd = info->input_bfds; ibfd ; ibfd = ibfd->link.next)
     {
       bfd_vma *local_plt_offsets = elf_local_got_offsets (ibfd);
       Elf_Internal_Shdr *symtab_hdr;
@@ -1427,7 +1444,7 @@ rl78_elf_relax_plt_section (bfd *dynobj,
       elf_link_hash_traverse (elf_hash_table (info),
 			      rl78_relax_plt_realloc, &entry);
 
-      for (ibfd = info->input_bfds; ibfd ; ibfd = ibfd->link_next)
+      for (ibfd = info->input_bfds; ibfd ; ibfd = ibfd->link.next)
 	{
 	  bfd_vma *local_plt_offsets = elf_local_got_offsets (ibfd);
 	  unsigned int nlocals = elf_tdata (ibfd)->symtab_hdr.sh_info;
@@ -1480,6 +1497,12 @@ elf32_rl78_relax_delete_bytes (bfd *abfd, asection *sec, bfd_vma addr, int count
     toaddr = alignment_rel->r_offset;
 
   irel = elf_section_data (sec)->relocs;
+  if (irel == NULL)
+    {
+      _bfd_elf_link_read_relocs (sec->owner, sec, NULL, NULL, TRUE);
+      irel = elf_section_data (sec)->relocs;
+    }
+
   irelend = irel + sec->reloc_count;
 
   /* Actually delete the bytes.  */
@@ -1495,7 +1518,7 @@ elf32_rl78_relax_delete_bytes (bfd *abfd, asection *sec, bfd_vma addr, int count
     memset (contents + toaddr - count, 0x03, count);
 
   /* Adjust all the relocs.  */
-  for (irel = elf_section_data (sec)->relocs; irel < irelend; irel++)
+  for (; irel && irel < irelend; irel++)
     {
       /* Get the new reloc address.  */
       if (irel->r_offset > addr
@@ -2176,7 +2199,7 @@ rl78_elf_relax_section
 	 61 F3 EF ad	SKNH ; BR $rel8
        */
 
-      if (irel->r_addend & RL78_RELAXA_BRA)
+      if ((irel->r_addend & RL78_RELAXA_MASK) == RL78_RELAXA_BRA)
 	{
 	  /* SKIP opcodes that skip non-branches will have a relax tag
 	     but no corresponding symbol to relax against; we just
@@ -2311,7 +2334,7 @@ rl78_elf_relax_section
 
 	}
 
-      if (irel->r_addend & RL78_RELAXA_ADDR16)
+      if ((irel->r_addend &  RL78_RELAXA_MASK) == RL78_RELAXA_ADDR16)
 	{
 	  /*----------------------------------------------------------------------*/
 	  /* Some insns have both a 16-bit address operand and an 8-bit
@@ -2410,7 +2433,7 @@ rl78_elf_relax_section
 #define ELF_MACHINE_CODE	EM_RL78
 #define ELF_MAXPAGESIZE		0x1000
 
-#define TARGET_LITTLE_SYM	bfd_elf32_rl78_vec
+#define TARGET_LITTLE_SYM	rl78_elf32_vec
 #define TARGET_LITTLE_NAME	"elf32-rl78"
 
 #define elf_info_to_howto_rel			NULL

@@ -78,7 +78,7 @@ backslashify (char *s)
 }
 
 static int pex_win32_open_read (struct pex_obj *, const char *, int);
-static int pex_win32_open_write (struct pex_obj *, const char *, int);
+static int pex_win32_open_write (struct pex_obj *, const char *, int, int);
 static pid_t pex_win32_exec_child (struct pex_obj *, int, const char *,
 				  char * const *, char * const *,
                                   int, int, int, int,
@@ -126,10 +126,12 @@ pex_win32_open_read (struct pex_obj *obj ATTRIBUTE_UNUSED, const char *name,
 
 static int
 pex_win32_open_write (struct pex_obj *obj ATTRIBUTE_UNUSED, const char *name,
-		      int binary)
+		      int binary, int append)
 {
   /* Note that we can't use O_EXCL here because gcc may have already
      created the temporary file via make_temp_file.  */
+  if (append)
+    return -1;
   return _open (name,
 		(_O_WRONLY | _O_CREAT | _O_TRUNC
 		 | (binary ? _O_BINARY : _O_TEXT)),
@@ -345,17 +347,16 @@ argv_to_cmdline (char *const *argv)
   cmdline_len = 0;
   for (i = 0; argv[i]; i++)
     {
-      /* We only quote arguments that contain spaces, \n \t \v or " characters
-	 to prevent wasting 2 chars per argument of the CreateProcess 32k char limit
-	 We need only escape embedded double-quotes and immediately
+      /* We only quote arguments that contain spaces, \t or " characters to
+	 prevent wasting 2 chars per argument of the CreateProcess 32k char
+	 limit.  We need only escape embedded double-quotes and immediately
 	 preceeding backslash characters.  A sequence of backslach characters
 	 that is not follwed by a double quote character will not be
 	 escaped.  */
       needs_quotes = 0;
       for (j = 0; argv[i][j]; j++)
 	{
-	  if (argv[i][j] == ' '  || argv[i][j] == '\n' ||
-	      argv[i][j] == '\t' || argv[i][j] == '"' )
+	  if (argv[i][j] == ' ' || argv[i][j] == '\t' || argv[i][j] == '"')
 	    {
 	      needs_quotes = 1;
 	    }
@@ -377,7 +378,8 @@ argv_to_cmdline (char *const *argv)
             cmdline_len++;
         }
       cmdline_len += j;
-      cmdline_len += 1 + (needs_quotes<<1);  /* for leading and trailing quotes and space */
+      /* for leading and trailing quotes and space */
+      cmdline_len += needs_quotes * 2 + 1;
     }
   cmdline = XNEWVEC (char, cmdline_len);
   p = cmdline;
@@ -386,8 +388,7 @@ argv_to_cmdline (char *const *argv)
       needs_quotes = 0;
       for (j = 0; argv[i][j]; j++)
         {
-          if (argv[i][j] == ' '  || argv[i][j] == '\n' ||
-              argv[i][j] == '\t' || argv[i][j] == '"' )
+          if (argv[i][j] == ' ' || argv[i][j] == '\t' || argv[i][j] == '"')
             {
               needs_quotes = 1;
               break;
