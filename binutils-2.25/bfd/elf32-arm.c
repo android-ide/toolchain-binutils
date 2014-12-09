@@ -11982,7 +11982,9 @@ elf32_arm_merge_eabi_attributes (bfd *ibfd, bfd *obfd)
 		 nothing.  */
 	      else if (in_attr[i].i == 0)
 		{
-		  BFD_ASSERT (in_attr[Tag_ABI_HardFP_use].i == 0);
+	         /* When linking against earlier version of object file, Tag_FP_arch may not
+	            even exist, while Tag_ABI_HardFP_use is non-zero. */
+		  BFD_ASSERT (!ATTR_TYPE_EXIST(in_attr[i].type) || in_attr[Tag_ABI_HardFP_use].i == 0);
 		  break;
 		}
 
@@ -16211,6 +16213,21 @@ elf32_arm_get_synthetic_symtab (bfd *abfd,
 #define elf_backend_obj_attrs_section_type	SHT_ARM_ATTRIBUTES
 #define elf_backend_obj_attrs_order		elf32_arm_obj_attrs_order
 #define elf_backend_obj_attrs_handle_unknown 	elf32_arm_obj_attrs_handle_unknown
+
+#undef  elf_backend_plt_sym_val
+#define elf_backend_plt_sym_val		elf32_arm_plt_sym_val
+
+/* Return address for Ith PLT stub in section PLT, for relocation REL
+   or (bfd_vma) -1 if it should not be included.  */
+
+static bfd_vma
+elf32_arm_plt_sym_val (bfd_vma i, const asection *plt,
+			       const arelent *rel ATTRIBUTE_UNUSED)
+{
+  return plt->vma + 4 * (
+    ARRAY_SIZE(elf32_arm_plt0_entry) +
+    ARRAY_SIZE(elf32_arm_plt_entry) * i);
+}
 
 #include "elf32-target.h"
 

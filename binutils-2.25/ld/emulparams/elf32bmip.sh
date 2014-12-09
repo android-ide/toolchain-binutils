@@ -6,7 +6,7 @@ SCRIPT_NAME=elf
 OUTPUT_FORMAT="elf32-bigmips"
 BIG_OUTPUT_FORMAT="elf32-bigmips"
 LITTLE_OUTPUT_FORMAT="elf32-littlemips"
-TEXT_START_ADDR=0x0400000
+TEXT_START_ADDR=0x80000
 test -n "${EMBEDDED}" || DATA_ADDR=0x10000000
 MAXPAGESIZE="CONSTANT (MAXPAGESIZE)"
 COMMONPAGESIZE="CONSTANT (COMMONPAGESIZE)"
@@ -65,12 +65,6 @@ OTHER_BSS_SYMBOLS='_fbss = .;'
 OTHER_SECTIONS='
   .gptab.sdata : { *(.gptab.data) *(.gptab.sdata) }
   .gptab.sbss : { *(.gptab.bss) *(.gptab.sbss) }
-  .mdebug.abi32 0 : { KEEP(*(.mdebug.abi32)) }
-  .mdebug.abiN32 0 : { KEEP(*(.mdebug.abiN32)) }
-  .mdebug.abi64 0 : { KEEP(*(.mdebug.abi64)) }
-  .mdebug.abiO64 0 : { KEEP(*(.mdebug.abiO64)) }
-  .mdebug.eabi32 0 : { KEEP(*(.mdebug.eabi32)) }
-  .mdebug.eabi64 0 : { KEEP(*(.mdebug.eabi64)) }
   .gcc_compiled_long32 0 : { KEEP(*(.gcc_compiled_long32)) }
   .gcc_compiled_long64 0 : { KEEP(*(.gcc_compiled_long64)) }
 '
