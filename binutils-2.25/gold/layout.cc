@@ -5534,8 +5534,6 @@ void
 Write_sections_task::locks(Task_locker* tl)
 {
   tl->add(this, this->output_sections_blocker_);
-  if (this->input_sections_blocker_ != NULL)
-    tl->add(this, this->input_sections_blocker_);
   tl->add(this, this->final_blocker_);
 }
 
