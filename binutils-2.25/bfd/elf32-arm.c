@@ -16214,6 +16214,11 @@ elf32_arm_get_synthetic_symtab (bfd *abfd,
 #define elf_backend_obj_attrs_order		elf32_arm_obj_attrs_order
 #define elf_backend_obj_attrs_handle_unknown 	elf32_arm_obj_attrs_handle_unknown
 
+#if 0
+/* Disable the following fix ported from https://android-review.googlesource.com/#/c/38591/1/binutils-2.21/bfd/elf32-arm.c 
+   becaus elf32_arm_plt_entry isn't defined when FOUR_WORD_PLT isn't defined where elf32_arm_plt_entry_short
+   and elf32_arm_plt_entry_long are defined instead.
+ */
 #undef  elf_backend_plt_sym_val
 #define elf_backend_plt_sym_val		elf32_arm_plt_sym_val
 
@@ -16228,6 +16233,7 @@ elf32_arm_plt_sym_val (bfd_vma i, const asection *plt,
     ARRAY_SIZE(elf32_arm_plt0_entry) +
     ARRAY_SIZE(elf32_arm_plt_entry) * i);
 }
+#endif
 
 #include "elf32-target.h"
 

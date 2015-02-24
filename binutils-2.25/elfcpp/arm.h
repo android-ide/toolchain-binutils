@@ -196,7 +196,8 @@ enum
   R_ARM_THM_TLS_DESCSEQ32 = 130,// Static	Thumb32
   // 131 - 139			Unallocated
   // 140 - 159			Dynamic		Reserved for future allocation
-  // 160 - 255			Unallocated
+  R_ARM_IRELATIVE = 160,	// Dynamic
+  // 161 - 255			Unallocated
 };
 
 // e_flags values used for ARM.  We only support flags defined in AAELF.
@@ -338,6 +339,24 @@ enum
   AEABI_enum_short = 1,
   AEABI_enum_wide = 2,
   AEABI_enum_forced_wide = 3
+};
+
+// Values for Tag_ABI_FP_number_model.
+enum
+{
+  AEABI_FP_number_model_none = 0,
+  AEABI_FP_number_model_ieee754_number = 1,
+  AEABI_FP_number_model_rtabi = 2,
+  AEABI_FP_number_model_ieee754_all = 3
+};
+
+// Values for Tag_ABI_VFP_args.
+enum
+{
+  AEABI_VFP_args_base = 0,
+  AEABI_VFP_args_vfp = 1,
+  AEABI_VFP_args_toolchain = 2,
+  AEABI_VFP_args_compatible = 3
 };
 
 // For Exception Index Table. (Exception handling ABI for the ARM
