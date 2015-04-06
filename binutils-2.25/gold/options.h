@@ -1330,6 +1330,9 @@ class General_options
   DEFINE_bool(fix_cortex_a53_835769, options::TWO_DASHES, '\0', false,
 	      N_("Ignored for now"), NULL);
 
+  DEFINE_bool(fix_cortex_a53_843419, options::TWO_DASHES, '\0', false,
+	      N_("Ignored for now"), NULL);
+
  public:
   typedef options::Dir_list Dir_list;
 
