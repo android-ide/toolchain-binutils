@@ -1,3 +1,7 @@
+2015-06-16  Yiran Wang <yiran@google.com>
+	* resolve.cc disable the warning of a hidden symbol matches a
+	reference to be resolved
+
 2015-04-27  Han Shen  <shenhan@google.com>
 
 	* options.h (--fix-cortex-a53-843419): Rename option.
