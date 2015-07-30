@@ -1335,9 +1335,6 @@ class General_options
 		    N_("Permit relocations in read-only segments (default)"),
 		    NULL, true);
 
-  DEFINE_bool(fix_cortex_a53_835769, options::TWO_DASHES, '\0', false,
-	      N_("Ignored for now"), NULL);
-
  public:
   typedef options::Dir_list Dir_list;
 
